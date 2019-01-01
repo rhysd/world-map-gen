@@ -3,8 +3,8 @@ extern crate term_size;
 
 use self::rand::{rngs, Rng};
 use crate::board;
-use crate::cell;
 use crate::error::{Error, Result};
+use crate::land;
 
 fn board_size(width: Option<usize>, height: Option<usize>) -> Result<(usize, usize)> {
     if let (Some(w), Some(h)) = (width, height) {
@@ -42,16 +42,24 @@ impl<R: Rng> RandomBoardGen<R> {
         height: Option<usize>,
     ) -> Result<board::Board<'static>> {
         let (width, height) = board_size(width, height)?;
-        Ok(self.gen_small(width, height))
+        if width < 15 && height < 15 {
+            Ok(self.gen_small(width, height))
+        } else {
+            Ok(self.gen_middle(width, height))
+        }
     }
 
     pub fn gen_small(&mut self, width: usize, height: usize) -> board::Board<'static> {
         board::Board::build(width, height, |_, _| match self.rng.gen_range(0, 100) {
-            0...15 => cell::AQUA.clone(),
-            16...55 => cell::GROUND.clone(),
-            56...85 => cell::FOREST.clone(),
-            86...99 => cell::MOUNTAIN.clone(),
+            0...15 => land::AQUA.clone(),
+            16...55 => land::GROUND.clone(),
+            56...85 => land::FOREST.clone(),
+            86...99 => land::MOUNTAIN.clone(),
             _ => unreachable!(),
         })
+    }
+
+    pub fn gen_middle(&mut self, width: usize, height: usize) -> board::Board<'static> {
+        unimplemented!()
     }
 }

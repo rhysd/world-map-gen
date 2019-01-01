@@ -2,7 +2,7 @@
 extern crate lazy_static;
 
 pub mod board;
-pub mod cell;
+pub mod land;
 pub mod draw;
 pub mod error;
 pub mod gen;

@@ -3,34 +3,34 @@ extern crate termcolor;
 use termcolor::{Color, ColorSpec};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum CellKind {
+pub enum LandKind {
     Aqua,
     Mountain,
     Forest,
     Ground,
 }
 
-impl CellKind {
+impl LandKind {
     pub fn name(&self) -> &str {
         match self {
-            CellKind::Aqua => "aqua",
-            CellKind::Mountain => "mountain",
-            CellKind::Forest => "forest",
-            CellKind::Ground => "ground",
+            LandKind::Aqua => "aqua",
+            LandKind::Mountain => "mountain",
+            LandKind::Forest => "forest",
+            LandKind::Ground => "ground",
         }
     }
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Cell<'a> {
-    pub kind: CellKind,
+pub struct Land<'a> {
+    pub kind: LandKind,
     pub char: &'a str,
     pub color: ColorSpec,
 }
 
 lazy_static! {
-    pub static ref AQUA: Cell<'static> = Cell {
-        kind: CellKind::Aqua,
+    pub static ref AQUA: Land<'static> = Land {
+        kind: LandKind::Aqua,
         char: "██",
         color: {
             let mut c = ColorSpec::new();
@@ -38,8 +38,8 @@ lazy_static! {
             c
         },
     };
-    pub static ref MOUNTAIN: Cell<'static> = Cell {
-        kind: CellKind::Mountain,
+    pub static ref MOUNTAIN: Land<'static> = Land {
+        kind: LandKind::Mountain,
         char: "██",
         color: {
             let mut c = ColorSpec::new();
@@ -47,8 +47,8 @@ lazy_static! {
             c
         },
     };
-    pub static ref FOREST: Cell<'static> = Cell {
-        kind: CellKind::Forest,
+    pub static ref FOREST: Land<'static> = Land {
+        kind: LandKind::Forest,
         char: "██",
         color: {
             let mut c = ColorSpec::new();
@@ -56,8 +56,8 @@ lazy_static! {
             c
         },
     };
-    pub static ref GROUND: Cell<'static> = Cell {
-        kind: CellKind::Ground,
+    pub static ref GROUND: Land<'static> = Land {
+        kind: LandKind::Ground,
         char: "██",
         color: {
             let mut c = ColorSpec::new();

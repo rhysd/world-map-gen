@@ -1,4 +1,4 @@
-use crate::cell::Cell;
+use crate::land::Land;
 use std::ops::{Index, IndexMut};
 
 //       width
@@ -20,7 +20,7 @@ pub struct Point {
 
 #[derive(Debug)]
 pub struct Row<'a> {
-    cols: Vec<Cell<'a>>,
+    cols: Vec<Land<'a>>,
 }
 
 impl<'a> Row<'a> {
@@ -28,21 +28,21 @@ impl<'a> Row<'a> {
         self.cols.len()
     }
 
-    pub fn cols(&self) -> std::slice::Iter<Cell<'a>> {
+    pub fn cols(&self) -> std::slice::Iter<Land<'a>> {
         self.cols.iter()
     }
 }
 
 impl<'a> Index<usize> for Row<'a> {
-    type Output = Cell<'a>;
+    type Output = Land<'a>;
 
-    fn index(&self, idx: usize) -> &Cell<'a> {
+    fn index(&self, idx: usize) -> &Land<'a> {
         &self.cols[idx]
     }
 }
 
 impl<'a> IndexMut<usize> for Row<'a> {
-    fn index_mut(&mut self, idx: usize) -> &mut Cell<'a> {
+    fn index_mut(&mut self, idx: usize) -> &mut Land<'a> {
         &mut self.cols[idx]
     }
 }
@@ -55,7 +55,7 @@ pub struct Board<'a> {
 impl<'a> Board<'a> {
     pub fn build<F>(width: usize, height: usize, mut builder: F) -> Board<'a>
     where
-        F: FnMut(usize, usize) -> Cell<'a>,
+        F: FnMut(usize, usize) -> Land<'a>,
     {
         let mut rows = Vec::with_capacity(height);
         for y in 0..height {
@@ -76,7 +76,7 @@ impl<'a> Board<'a> {
         self.rows.len()
     }
 
-    pub fn at(&self, p: Point) -> &Cell {
+    pub fn at(&self, p: Point) -> &Land {
         &self.rows[p.y][p.x]
     }
 
