@@ -1,0 +1,14 @@
+[package]
+name = "game-map-gen"
+version = "0.1.0"
+authors = ["rhysd <lin90162@yahoo.co.jp>"]
+edition = "2018"
+
+[[bin]]
+path = "src/main.rs"
+name = "game-map-gen"
+
+[dependencies]
+termcolor = "1.0.4"
+lazy_static = "1.2.0"
+rand = "0.6.1"
