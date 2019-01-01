@@ -1,7 +1,7 @@
 [package]
 name = "game-map-gen"
 version = "0.1.0"
-authors = ["rhysd <lin90162@yahoo.co.jp>"]
+authors = ["rhysd <https://rhysd.github.io>"]
 edition = "2018"
 
 [[bin]]
@@ -12,3 +12,5 @@ name = "game-map-gen"
 termcolor = "1.0.4"
 lazy_static = "1.2.0"
 rand = "0.6.1"
+clap = "2.32.0"
+term_size = "0.3.1"
