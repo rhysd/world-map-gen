@@ -34,6 +34,7 @@ pub struct MiddleBoardGen<'a, R: Rng + 'a> {
     num_towns: usize,
     min_distance: usize,
     down_rate: u8,
+    num_tops: usize,
 }
 
 impl<'a, R: Rng> MiddleBoardGen<'a, R> {
@@ -43,11 +44,12 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
             altitudes.push(Vec::with_capacity(width));
         }
 
-        let average_town_area_len = rng.gen_range(19, 22);
+        let average_town_area_len = rng.gen_range(15, 18);
         let num_towns = width * height / (average_town_area_len * average_town_area_len);
-        let min_distance = width * height / (15 * 15);
+        let min_distance = (width + height) / num_towns;
         // Note: Standard value is 20 at 48x36 board
-        let down_rate = 13 + (48 * 36 * 7 / (width * height)) as u8;
+        let down_rate = 12 + (48 * 36 * 8 / (width * height)) as u8;
+        let num_tops = 3 + (width + height) * rng.gen_range(3, 7) / (48 + 36);
 
         MiddleBoardGen {
             rng,
@@ -57,6 +59,7 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
             num_towns,
             min_distance,
             down_rate,
+            num_tops,
         }
     }
 
@@ -93,11 +96,10 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
     }
 
     fn gen(&mut self) -> Result<Board<'static>> {
-        let num_tops = 6 + self.rng.gen_range(0, 4);
-        let mut tops = HashSet::with_capacity(num_tops);
+        let mut tops = HashSet::with_capacity(self.num_tops);
 
         // Generate tops of mountains. Every point must be unique so using HashSet
-        while tops.len() < num_tops {
+        while tops.len() < self.num_tops {
             let x = self.rng.gen_range(0, self.width);
             let y = self.rng.gen_range(0, self.height);
             tops.insert(Point { x, y });
