@@ -31,6 +31,9 @@ pub struct MiddleBoardGen<'a, R: Rng + 'a> {
     altitudes: Vec<Vec<u8>>,
     width: usize,
     height: usize,
+    num_towns: usize,
+    min_distance: usize,
+    down_rate: u8,
 }
 
 impl<'a, R: Rng> MiddleBoardGen<'a, R> {
@@ -40,23 +43,31 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
             altitudes.push(Vec::with_capacity(width));
         }
 
+        let average_town_area_len = rng.gen_range(19, 22);
+        let num_towns = width * height / (average_town_area_len * average_town_area_len);
+        let min_distance = width * height / (15 * 15);
+        // Note: Standard value is 20 at 48x36 board
+        let down_rate = 13 + (48 * 36 * 7 / (width * height)) as u8;
+
         MiddleBoardGen {
             rng,
             altitudes,
             width,
             height,
+            num_towns,
+            min_distance,
+            down_rate,
         }
     }
 
     // Down a slope
     fn down(&mut self, altitude: u8, x: usize, y: usize) {
-        // TODO: 15 is a magic number
-        let delta = self.rng.gen_range(0, 15);
-        let altitude = if altitude < delta {
-            0
-        } else {
-            altitude - delta
-        };
+        let delta = self.rng.gen_range(0, self.down_rate);
+        if altitude < delta {
+            // Skip when altitude is min since default value of altitude is 0
+            return;
+        }
+        let altitude = altitude - delta;
         if self.altitudes[y][x] >= altitude {
             // Skip when the altitude is already calculated as other mountain's slope
             return;
@@ -116,14 +127,16 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
         grounds.as_mut_slice().shuffle(&mut self.rng);
         let grounds = grounds;
 
-        let num_towns = 8 + self.rng.gen_range(0, 4);
-        let mut towns = HashSet::with_capacity(num_towns);
+        let mut towns = HashSet::with_capacity(self.num_towns);
 
         for g in grounds.iter() {
-            if towns.len() == num_towns {
+            if towns.len() == self.num_towns {
                 break;
             }
-            if towns.iter().all(|p: &Point| p.move_cost(g) > 8) {
+            if towns
+                .iter()
+                .all(|p: &Point| p.move_cost(g) > self.min_distance)
+            {
                 towns.insert(*g);
             }
         }

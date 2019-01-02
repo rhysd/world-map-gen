@@ -85,12 +85,16 @@ impl<'a> Board<'a> {
         self.rows.len()
     }
 
-    pub fn at(&self, p: Point) -> &Land {
+    pub fn at(&self, p: &Point) -> &Land {
         &self.rows[p.y][p.x]
     }
 
     pub fn rows(&self) -> std::slice::Iter<Row<'a>> {
         self.rows.iter()
+    }
+
+    pub fn at_mut<'b>(&mut self, p: &'b Point) -> &'a mut Land {
+        &mut self.rows[p.y][p.x]
     }
 }
 

@@ -2,11 +2,11 @@ extern crate clap;
 extern crate rand;
 
 use clap::{App, Arg};
-use game_map_gen::{draw, gen};
+use world_map_gen::{draw, gen};
 use std::fmt;
 
 enum Error {
-    GenFail(game_map_gen::error::Error),
+    GenFail(world_map_gen::error::Error),
     CliParseFail { name: String, msg: String },
 }
 
@@ -21,8 +21,8 @@ impl fmt::Debug for Error {
     }
 }
 
-impl From<game_map_gen::error::Error> for Error {
-    fn from(err: game_map_gen::error::Error) -> Error {
+impl From<world_map_gen::error::Error> for Error {
+    fn from(err: world_map_gen::error::Error) -> Error {
         Error::GenFail(err)
     }
 }

@@ -1,12 +1,12 @@
 [package]
-name = "game-map-gen"
+name = "world-map-gen"
 version = "0.1.0"
 authors = ["rhysd <https://rhysd.github.io>"]
 edition = "2018"
 
 [[bin]]
 path = "src/main.rs"
-name = "game-map-gen"
+name = "world-map-gen"
 
 [dependencies]
 termcolor = "1.0.4"
