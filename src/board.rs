@@ -12,10 +12,19 @@ use std::ops::{Index, IndexMut};
 //  V
 //  y
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Point {
-    x: usize,
-    y: usize,
+    pub x: usize,
+    pub y: usize,
+}
+
+impl Point {
+    pub fn move_cost(&self, other: &Point) -> usize {
+        use std::cmp::{max, min};
+        let dx = max(self.x, other.x) - min(self.x, other.x);
+        let dy = max(self.y, other.y) - min(self.y, other.y);
+        dx + dy
+    }
 }
 
 #[derive(Debug)]

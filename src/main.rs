@@ -1,7 +1,8 @@
 extern crate clap;
+extern crate rand;
 
 use clap::{App, Arg};
-use game_map_gen::{draw, gen::RandomBoardGen};
+use game_map_gen::{draw, gen};
 use std::fmt;
 
 enum Error {
@@ -69,19 +70,38 @@ fn main() -> Result<(), Error> {
                 .value_name("INTEGER")
                 .help("Board height in number of cells"),
         )
+        .arg(
+            Arg::with_name("scale")
+                .long("scale")
+                .value_name("STRING")
+                .possible_values(&["small", "middle", "large"])
+                .help("Map scale"),
+        )
+        .arg(
+            Arg::with_name("altitude")
+                .short("a")
+                .long("altitude")
+                .help("Show altitude instead of squre as cell mainly for debug"),
+        )
         .get_matches();
 
     let seed = parse_opt("seed", matches.value_of("seed"))?;
     let width = parse_opt("width", matches.value_of("width"))?;
     let height = parse_opt("height", matches.value_of("height"))?;
+    let scale = matches.value_of("scale").map(|s| match s {
+        "small" => gen::Scale::Small,
+        "middle" => gen::Scale::Middle,
+        "large" => gen::Scale::Large,
+        _ => unreachable!(),
+    });
 
     let board = if let Some(seed) = seed {
-        RandomBoardGen::from_seed(seed).gen(width, height)?
+        gen::RandomBoardGen::from_seed(seed).gen(scale, width, height)?
     } else {
-        RandomBoardGen::new().gen(width, height)?
+        gen::RandomBoardGen::new().gen(scale, width, height)?
     };
 
-    draw::draw_term(&board)?;
+    draw::draw_term(&board, matches.is_present("altitude"))?;
 
     Ok(())
 }

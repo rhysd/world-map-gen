@@ -8,6 +8,8 @@ pub enum LandKind {
     Mountain,
     Forest,
     Ground,
+    Town,
+    Top,
 }
 
 impl LandKind {
@@ -17,6 +19,8 @@ impl LandKind {
             LandKind::Mountain => "mountain",
             LandKind::Forest => "forest",
             LandKind::Ground => "ground",
+            LandKind::Town => "town",
+            LandKind::Top => "top",
         }
     }
 }
@@ -26,6 +30,7 @@ pub struct Land<'a> {
     pub kind: LandKind,
     pub char: &'a str,
     pub color: ColorSpec,
+    pub altitude: u8,
 }
 
 lazy_static! {
@@ -37,6 +42,7 @@ lazy_static! {
             c.set_fg(Some(Color::Ansi256(81)));
             c
         },
+        altitude: 0,
     };
     pub static ref MOUNTAIN: Land<'static> = Land {
         kind: LandKind::Mountain,
@@ -46,6 +52,7 @@ lazy_static! {
             c.set_fg(Some(Color::Ansi256(94)));
             c
         },
+        altitude: 0,
     };
     pub static ref FOREST: Land<'static> = Land {
         kind: LandKind::Forest,
@@ -55,6 +62,7 @@ lazy_static! {
             c.set_fg(Some(Color::Ansi256(22)));
             c
         },
+        altitude: 0,
     };
     pub static ref GROUND: Land<'static> = Land {
         kind: LandKind::Ground,
@@ -64,5 +72,26 @@ lazy_static! {
             c.set_fg(Some(Color::Ansi256(118)));
             c
         },
+        altitude: 0,
+    };
+    pub static ref TOWN: Land<'static> = Land {
+        kind: LandKind::Town,
+        char: "██",
+        color: {
+            let mut c = ColorSpec::new();
+            c.set_fg(Some(Color::Ansi256(226)));
+            c
+        },
+        altitude: 0,
+    };
+    pub static ref TOP: Land<'static> = Land {
+        kind: LandKind::Top,
+        char: "██",
+        color: {
+            let mut c = ColorSpec::new();
+            c.set_fg(Some(Color::Ansi256(101)));
+            c
+        },
+        altitude: 0,
     };
 }
