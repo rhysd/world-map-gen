@@ -19,6 +19,7 @@ pub struct Point {
 }
 
 impl Point {
+    #[inline]
     pub fn move_cost(&self, other: &Point) -> usize {
         use std::cmp::{max, min};
         let dx = max(self.x, other.x) - min(self.x, other.x);
@@ -33,10 +34,12 @@ pub struct Row<'a> {
 }
 
 impl<'a> Row<'a> {
+    #[inline]
     pub fn width(&self) -> usize {
         self.cols.len()
     }
 
+    #[inline]
     pub fn cols(&self) -> std::slice::Iter<Land<'a>> {
         self.cols.iter()
     }
@@ -45,12 +48,14 @@ impl<'a> Row<'a> {
 impl<'a> Index<usize> for Row<'a> {
     type Output = Land<'a>;
 
+    #[inline]
     fn index(&self, idx: usize) -> &Land<'a> {
         &self.cols[idx]
     }
 }
 
 impl<'a> IndexMut<usize> for Row<'a> {
+    #[inline]
     fn index_mut(&mut self, idx: usize) -> &mut Land<'a> {
         &mut self.cols[idx]
     }
@@ -77,22 +82,27 @@ impl<'a> Board<'a> {
         Board { rows }
     }
 
+    #[inline]
     pub fn width(&self) -> usize {
         self.rows[0].width()
     }
 
+    #[inline]
     pub fn height(&self) -> usize {
         self.rows.len()
     }
 
+    #[inline]
     pub fn at(&self, p: &Point) -> &Land {
         &self.rows[p.y][p.x]
     }
 
+    #[inline]
     pub fn rows(&self) -> std::slice::Iter<Row<'a>> {
         self.rows.iter()
     }
 
+    #[inline]
     pub fn at_mut<'b>(&mut self, p: &'b Point) -> &'a mut Land {
         &mut self.rows[p.y][p.x]
     }
@@ -101,12 +111,14 @@ impl<'a> Board<'a> {
 impl<'a> Index<usize> for Board<'a> {
     type Output = Row<'a>;
 
+    #[inline]
     fn index(&self, idx: usize) -> &Row<'a> {
         &self.rows[idx]
     }
 }
 
 impl<'a> IndexMut<usize> for Board<'a> {
+    #[inline]
     fn index_mut(&mut self, idx: usize) -> &mut Row<'a> {
         &mut self.rows[idx]
     }

@@ -10,6 +10,9 @@ pub enum LandKind {
     Ground,
     Town,
     Top,
+    Alpine,
+    DeepSea,
+    Path,
 }
 
 impl LandKind {
@@ -21,6 +24,23 @@ impl LandKind {
             LandKind::Ground => "ground",
             LandKind::Town => "town",
             LandKind::Top => "top",
+            LandKind::Alpine => "alpine",
+            LandKind::DeepSea => "deep sea",
+            LandKind::Path => "path",
+        }
+    }
+
+    pub fn constant(&self) -> Land<'static> {
+        match self {
+            LandKind::Aqua => AQUA.clone(),
+            LandKind::Mountain => MOUNTAIN.clone(),
+            LandKind::Forest => FOREST.clone(),
+            LandKind::Ground => GROUND.clone(),
+            LandKind::Town => TOWN.clone(),
+            LandKind::Top => TOP.clone(),
+            LandKind::Alpine => ALPINE.clone(),
+            LandKind::DeepSea => DEEPSEA.clone(),
+            LandKind::Path => PATH.clone(),
         }
     }
 }
@@ -89,7 +109,37 @@ lazy_static! {
         char: "██",
         color: {
             let mut c = ColorSpec::new();
-            c.set_fg(Some(Color::Ansi256(101)));
+            c.set_fg(Some(Color::Ansi256(102)));
+            c
+        },
+        altitude: 0,
+    };
+    pub static ref ALPINE: Land<'static> = Land {
+        kind: LandKind::Top,
+        char: "██",
+        color: {
+            let mut c = ColorSpec::new();
+            c.set_fg(Some(Color::Ansi256(58)));
+            c
+        },
+        altitude: 0,
+    };
+    pub static ref DEEPSEA: Land<'static> = Land {
+        kind: LandKind::DeepSea,
+        char: "██",
+        color: {
+            let mut c = ColorSpec::new();
+            c.set_fg(Some(Color::Ansi256(63)));
+            c
+        },
+        altitude: 0,
+    };
+    pub static ref PATH: Land<'static> = Land {
+        kind: LandKind::Path,
+        char: "██",
+        color: {
+            let mut c = ColorSpec::new();
+            c.set_fg(Some(Color::Ansi256(15)));
             c
         },
         altitude: 0,
