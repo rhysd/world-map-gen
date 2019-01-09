@@ -1,8 +1,11 @@
+extern crate serde;
+extern crate serde_json;
 extern crate termcolor;
 
+use crate::color;
 use termcolor::{Color, ColorSpec};
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
 pub enum LandKind {
     Sea,
     Mountain,
@@ -16,20 +19,6 @@ pub enum LandKind {
 }
 
 impl LandKind {
-    pub fn name(&self) -> &str {
-        match self {
-            LandKind::Sea => "sea",
-            LandKind::Mountain => "mountain",
-            LandKind::Forest => "forest",
-            LandKind::Ground => "ground",
-            LandKind::Town => "town",
-            LandKind::Top => "top",
-            LandKind::Alpine => "alpine",
-            LandKind::DeepSea => "deep sea",
-            LandKind::Path => "path",
-        }
-    }
-
     pub fn constant(self) -> Land<'static> {
         match self {
             LandKind::Sea => SEA.clone(),
@@ -51,6 +40,18 @@ pub struct Land<'a> {
     pub char: &'a str,
     pub color: ColorSpec,
     pub altitude: u8,
+}
+
+impl<'a> serde::Serialize for Land<'a> {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        use serde::ser::SerializeMap;
+        let mut map = serializer.serialize_map(Some(4))?;
+        map.serialize_entry("kind", &self.kind)?;
+        map.serialize_entry("char", self.char)?;
+        map.serialize_entry("color", &color::serializable_spec(&self.color))?;
+        map.serialize_entry("altitude", &self.altitude)?;
+        map.end()
+    }
 }
 
 macro_rules! define_lands {

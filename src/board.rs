@@ -1,3 +1,6 @@
+extern crate serde;
+extern crate serde_json;
+
 use crate::land::Land;
 use std::ops::{Index, IndexMut};
 
@@ -28,7 +31,7 @@ impl Pos {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Row<'a> {
     cols: Vec<Land<'a>>,
 }
@@ -61,9 +64,11 @@ impl<'a> IndexMut<usize> for Row<'a> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Board<'a> {
     rows: Vec<Row<'a>>,
+    width: usize,
+    height: usize,
 }
 
 impl<'a> Board<'a> {
@@ -79,7 +84,11 @@ impl<'a> Board<'a> {
             }
             rows.push(Row { cols });
         }
-        Board { rows }
+        Board {
+            rows,
+            width,
+            height,
+        }
     }
 
     #[inline]
