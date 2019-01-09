@@ -28,8 +28,7 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
             altitudes.push(row);
         }
 
-        let average_town_area_len = rng.gen_range(15, 18);
-        let num_towns = width * height / (average_town_area_len * average_town_area_len);
+        let num_towns = width * height / 2048 + rng.gen_range(0, 4);
         let min_distance = (width + height) / num_towns;
         // Note: Standard value is 20 at 48x36 board
         let down_rate = 12 + (48 * 36 * 8 / (width * height)) as u8;
