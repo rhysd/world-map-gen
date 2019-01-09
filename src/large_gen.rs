@@ -39,7 +39,11 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
 
         let max_towns = rng.gen_range(10, 16);
         let num_tops = width * height / 2048 + rng.gen_range(0, 4);
-        let town_min_cost = width / max_towns;
+        let town_min_cost = if max_towns > 0 {
+            width / max_towns
+        } else {
+            width
+        };
         let conn_max_cost = width / 2;
         let down_rate = 6; // Set smaller down rate for larger map
 

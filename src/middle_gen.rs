@@ -29,7 +29,11 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
         }
 
         let num_towns = width * height / 2048 + rng.gen_range(0, 4);
-        let min_distance = (width + height) / num_towns;
+        let min_distance = if num_towns != 0 {
+            (width + height) / num_towns
+        } else {
+            width + height
+        };
         // Note: Standard value is 20 at 48x36 board
         let down_rate = 12 + (48 * 36 * 8 / (width * height)) as u8;
         let num_tops = 3 + (width + height) * rng.gen_range(3, 7) / (48 + 36);
