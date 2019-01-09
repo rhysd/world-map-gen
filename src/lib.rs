@@ -6,3 +6,5 @@ pub mod draw;
 pub mod error;
 pub mod gen;
 pub mod land;
+pub mod large_gen;
+pub mod middle_gen;
