@@ -111,7 +111,9 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         tops
     }
 
+    #[allow(clippy::needless_range_loop)]
     fn towns(&mut self) -> HashSet<Pos> {
+        #[inline]
         fn land_fitness(kind: land::LandKind) -> u8 {
             match kind {
                 land::LandKind::DeepSea => 0,
@@ -143,7 +145,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                         let mut sum = 0 as i32;
                         for y in &[y - 1, y, y + 1] {
                             for x in &[x - 1, x, x + 1] {
-                                sum = sum + fitness[*y][*x] as i32;
+                                sum += i32::from(fitness[*y][*x]);
                             }
                         }
                         fitness[y][x] = (sum / 9) as u8;
@@ -276,14 +278,10 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
 
             let Pos { x, y } = pos;
             for pair in &[
-                // (x.checked_sub(1), y.checked_sub(1)),
                 (Some(x), y.checked_sub(1)),
-                // (x.checked_add(1), y.checked_sub(1)),
                 (x.checked_sub(1), Some(y)),
                 (x.checked_add(1), Some(y)),
-                // (x.checked_sub(1), y.checked_add(1)),
                 (Some(x), y.checked_add(1)),
-                // (x.checked_add(1), y.checked_add(1)),
             ] {
                 let (x, y) = match pair {
                     (Some(x), Some(y)) => {
@@ -342,7 +340,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                         Some((cost, t))
                     })
                     .collect::<Vec<_>>();
-                near_towns.sort_unstable_by_key(|(cost, _)| cost.clone());
+                near_towns.sort_unstable_by_key(|(cost, _)| *cost);
 
                 let mut dirs = HashSet::new();
                 near_towns.into_iter().filter_map(move |(_, near)| {

@@ -30,7 +30,7 @@ impl LandKind {
         }
     }
 
-    pub fn constant(&self) -> Land<'static> {
+    pub fn constant(self) -> Land<'static> {
         match self {
             LandKind::Sea => SEA.clone(),
             LandKind::Mountain => MOUNTAIN.clone(),

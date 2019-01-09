@@ -9,16 +9,15 @@ use crate::large_gen::LargeBoardGen;
 use crate::middle_gen::MiddleBoardGen;
 
 #[inline]
+#[allow(clippy::or_fun_call)]
 fn board_size(width: Option<usize>, height: Option<usize>) -> Result<(usize, usize)> {
     if let (Some(w), Some(h)) = (width, height) {
         return Ok((w, h));
     }
     let (w, h) = term_size::dimensions().ok_or(Error::CannotDetermineTermsize)?;
     // Divide by 2 since assuming that a terminal utilizes monospace font.
-    Ok((
-        width.unwrap_or(w / 2),
-        height.unwrap_or(std::cmp::min(w / 2, h)),
-    ))
+    let w = w / 2;
+    Ok((width.unwrap_or(w), height.unwrap_or(std::cmp::min(w, h))))
 }
 
 pub enum Resolution {
@@ -39,8 +38,8 @@ impl RandomBoardGen<rngs::StdRng> {
     }
 }
 
-impl RandomBoardGen<rngs::ThreadRng> {
-    pub fn new() -> Self {
+impl Default for RandomBoardGen<rngs::ThreadRng> {
+    fn default() -> Self {
         RandomBoardGen {
             rng: rand::thread_rng(),
         }
@@ -50,7 +49,7 @@ impl RandomBoardGen<rngs::ThreadRng> {
 impl<R: Rng> RandomBoardGen<R> {
     pub fn gen(
         &mut self,
-        resolution: Option<Resolution>,
+        resolution: &Option<Resolution>,
         width: Option<usize>,
         height: Option<usize>,
     ) -> Result<Board<'static>> {

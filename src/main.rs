@@ -97,9 +97,9 @@ fn main() -> Result<(), Error> {
     });
 
     let board = if let Some(seed) = seed {
-        gen::RandomBoardGen::from_seed(seed).gen(resolution, width, height)?
+        gen::RandomBoardGen::from_seed(seed).gen(&resolution, width, height)?
     } else {
-        gen::RandomBoardGen::new().gen(resolution, width, height)?
+        gen::RandomBoardGen::default().gen(&resolution, width, height)?
     };
 
     draw::draw_term(&board, matches.is_present("altitude"))?;

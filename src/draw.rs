@@ -24,7 +24,7 @@ impl<W: WriteColor> TermDrawer<W> {
                     write!(&mut self.stdout, "{}", cell.char)?;
                 }
             }
-            writeln!(&mut self.stdout, "")?;
+            writeln!(&mut self.stdout)?;
         }
         Ok(())
     }
