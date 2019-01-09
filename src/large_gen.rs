@@ -41,7 +41,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         let num_tops = width * height / 2048 + rng.gen_range(0, 4);
         let town_min_cost = width / max_towns;
         let conn_max_cost = width / 2;
-        let down_rate = 4; // Set smaller down rate for larger map
+        let down_rate = 6; // Set smaller down rate for larger map
 
         LargeBoardGen {
             rng,
@@ -67,6 +67,11 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
             91...99 => land::LandKind::Alpine,
             _ => unreachable!(),
         }
+    }
+
+    #[inline]
+    fn land_kind_at(&self, x: usize, y: usize) -> land::LandKind {
+        Self::land_kind(self.altitudes[y][x])
     }
 
     // Down a slope
@@ -131,7 +136,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         for y in 0..self.height {
             let mut row = Vec::with_capacity(self.width);
             for x in 0..self.width {
-                row.push(land_fitness(Self::land_kind(self.altitudes[y][x])))
+                row.push(land_fitness(self.land_kind_at(x, y)))
             }
             fitness.push(row);
         }
@@ -155,15 +160,15 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         }
 
         convo_3times(&mut fitness);
-        for h in 0..self.height {
-            for w in 0..self.width {
-                if h == 0
-                    || w == 0
-                    || h == self.height - 1
-                    || w == self.width - 1
-                    || Self::land_kind(self.altitudes[h][w]) != land::LandKind::Ground
+        for y in 0..self.height {
+            for x in 0..self.width {
+                if y == 0
+                    || x == 0
+                    || y == self.height - 1
+                    || x == self.width - 1
+                    || self.land_kind_at(x, y) != land::LandKind::Ground
                 {
-                    fitness[h][w] = 0;
+                    fitness[y][x] = 0;
                 }
             }
         }
@@ -212,7 +217,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                 land::LandKind::DeepSea => 64,
                 land::LandKind::Sea => 32,
                 land::LandKind::Ground => 1,
-                land::LandKind::Forest => 2,
+                land::LandKind::Forest => 4,
                 land::LandKind::Mountain => 8,
                 land::LandKind::Alpine => 16,
                 _ => unreachable!(),
@@ -300,7 +305,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                     }
                 }
 
-                let cost = cost + land_cost(Self::land_kind(self.altitudes[y][x]));
+                let cost = cost + land_cost(self.land_kind_at(x, y));
                 let pos = Pos { x, y };
 
                 if let Some(c) = costs.get(&pos) {

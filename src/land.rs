@@ -81,5 +81,5 @@ define_lands! {
     TOP      = (Top, 102);
     ALPINE   = (Alpine, 58);
     DEEPSEA  = (DeepSea, 63);
-    PATH     = (Path, 192);
+    PATH     = (Path, 193);
 }
