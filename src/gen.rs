@@ -3,7 +3,7 @@ extern crate term_size;
 
 use self::rand::seq::SliceRandom;
 use self::rand::{rngs, Rng};
-use crate::board::{Board, Point};
+use crate::board::{Board, Pos};
 use crate::error::{Error, Result};
 use crate::land;
 use std::cmp::Ordering;
@@ -72,7 +72,7 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
     #[inline]
     fn land_kind(altitude: u8) -> land::LandKind {
         match altitude {
-            0...10 => land::LandKind::Aqua,
+            0...10 => land::LandKind::Sea,
             11...40 => land::LandKind::Ground,
             41...70 => land::LandKind::Forest,
             71...99 => land::LandKind::Mountain,
@@ -119,11 +119,11 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
         while tops.len() < self.num_tops {
             let x = self.rng.gen_range(0, self.width);
             let y = self.rng.gen_range(0, self.height);
-            tops.insert(Point { x, y });
+            tops.insert(Pos { x, y });
         }
         let tops = tops;
 
-        for Point { x, y } in tops.iter() {
+        for Pos { x, y } in tops.iter() {
             // Altitude is 0~99. Top is always at 99
             self.slope(99, *x, *y);
         }
@@ -132,7 +132,7 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
         for (h, line) in self.altitudes.iter().enumerate() {
             for (w, alt) in line.iter().enumerate() {
                 if Self::land_kind(*alt) == land::LandKind::Ground {
-                    grounds.push(Point { x: w, y: h });
+                    grounds.push(Pos { x: w, y: h });
                 }
             }
         }
@@ -147,7 +147,7 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
             }
             if towns
                 .iter()
-                .all(|p: &Point| p.move_cost(g) > self.min_distance)
+                .all(|p: &Pos| p.move_cost(g) > self.min_distance)
             {
                 towns.insert(*g);
             }
@@ -156,7 +156,7 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
 
         Ok(Board::build(self.width, self.height, |w, h| {
             let alt = self.altitudes[h][w];
-            let p = Point { x: w, y: h };
+            let p = Pos { x: w, y: h };
             let mut chosen = if tops.contains(&p) {
                 land::TOP.clone()
             } else if towns.contains(&p) {
@@ -172,8 +172,8 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 struct Connection<'a> {
-    from: &'a Point,
-    to: &'a Point,
+    from: &'a Pos,
+    to: &'a Pos,
 }
 
 struct LargeBoardGen<'a, R: Rng + 'a> {
@@ -222,7 +222,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     fn land_kind(altitude: u8) -> land::LandKind {
         match altitude {
             0...40 => land::LandKind::DeepSea,
-            41...55 => land::LandKind::Aqua,
+            41...55 => land::LandKind::Sea,
             56...70 => land::LandKind::Ground,
             71...80 => land::LandKind::Forest,
             81...90 => land::LandKind::Mountain,
@@ -263,21 +263,21 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         }
     }
 
-    fn tops(&mut self) -> HashSet<Point> {
+    fn tops(&mut self) -> HashSet<Pos> {
         let mut tops = HashSet::with_capacity(self.num_tops);
         while tops.len() < self.num_tops {
             let x = self.rng.gen_range(0, self.width);
             let y = self.rng.gen_range(0, self.height);
-            tops.insert(Point { x, y });
+            tops.insert(Pos { x, y });
         }
         tops
     }
 
-    fn towns(&mut self) -> HashSet<Point> {
+    fn towns(&mut self) -> HashSet<Pos> {
         fn land_fitness(kind: land::LandKind) -> u8 {
             match kind {
                 land::LandKind::DeepSea => 0,
-                land::LandKind::Aqua => 16,
+                land::LandKind::Sea => 16,
                 land::LandKind::Ground => 8,
                 land::LandKind::Forest => 4,
                 land::LandKind::Mountain => 2,
@@ -343,7 +343,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         for y in 1..fitness.len() - 1 {
             for x in 1..fitness[y].len() - 1 {
                 if fitness[y][x] >= min_fitness {
-                    candidates.push(Point { x, y });
+                    candidates.push(Pos { x, y });
                 }
             }
         }
@@ -356,7 +356,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
             }
             if towns
                 .iter()
-                .all(|p: &Point| p.move_cost(c) > self.town_min_cost)
+                .all(|p: &Pos| p.move_cost(c) > self.town_min_cost)
             {
                 towns.insert(*c);
             }
@@ -365,11 +365,12 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     }
 
     // Get shortest path of the connection using Dijkstra's algorithm
-    fn shortest_path<'b>(&self, conn: &Connection<'b>) -> Vec<Point> {
+    fn shortest_path<'b>(&self, conn: &Connection<'b>) -> Vec<Pos> {
+        #[inline]
         fn land_cost(kind: land::LandKind) -> usize {
             match kind {
                 land::LandKind::DeepSea => 64,
-                land::LandKind::Aqua => 32,
+                land::LandKind::Sea => 32,
                 land::LandKind::Ground => 1,
                 land::LandKind::Forest => 2,
                 land::LandKind::Mountain => 8,
@@ -380,13 +381,13 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
 
         #[derive(Clone)]
         enum Route {
-            Cons(Point, Rc<Route>),
+            Cons(Pos, Rc<Route>),
             Nil,
         }
 
         struct Vert {
             cost: usize,
-            pos: Point,
+            pos: Pos,
             prev: Route,
         }
 
@@ -424,8 +425,8 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
 
         while let Some(Vert { cost, pos, prev }) = state.pop() {
             if &pos == conn.to {
-                // Collect list as Vec<Point>
-                // Note: Start node and goal node are not included
+                // Collect list as Vec<Pos>
+                // Note: Start node and goal node are not included since they are town
                 let mut verts = Vec::new();
                 let mut route = &prev;
                 while let Route::Cons(pos, ref prev) = route {
@@ -435,7 +436,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                 return verts;
             }
 
-            let Point { x, y } = pos;
+            let Pos { x, y } = pos;
             for pair in &[
                 // (x.checked_sub(1), y.checked_sub(1)),
                 (Some(x), y.checked_sub(1)),
@@ -464,7 +465,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                 }
 
                 let cost = cost + land_cost(Self::land_kind(self.altitudes[y][x]));
-                let pos = Point { x, y };
+                let pos = Pos { x, y };
 
                 if let Some(c) = costs.get(&pos) {
                     if cost >= *c {
@@ -486,7 +487,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     }
 
     // Get all cells of paths
-    fn paths(&mut self, towns: &HashSet<Point>) -> HashSet<Point> {
+    fn paths(&mut self, towns: &HashSet<Pos>) -> HashSet<Pos> {
         towns
             .iter()
             .map(|town| {
@@ -551,7 +552,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         let tops = self.tops();
 
         // Calculate altitude of cells
-        for Point { x, y } in tops.iter() {
+        for Pos { x, y } in tops.iter() {
             // Altitude is 0~99. Top is always at 99
             self.slope(99, *x, *y);
         }
@@ -561,7 +562,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
 
         Ok(Board::build(self.width, self.height, |w, h| {
             let alt = self.altitudes[h][w];
-            let p = Point { x: w, y: h };
+            let p = Pos { x: w, y: h };
             let mut land = if tops.contains(&p) {
                 land::TOP.clone()
             } else if towns.contains(&p) {
@@ -627,7 +628,7 @@ impl<R: Rng> RandomBoardGen<R> {
         Ok(Board::build(width, height, |_, _| {
             let alt = self.rng.gen_range(0, 100);
             let mut chosen = match alt {
-                0...15 => land::AQUA.clone(),
+                0...15 => land::SEA.clone(),
                 16...55 => land::GROUND.clone(),
                 56...85 => land::FOREST.clone(),
                 86...99 => land::MOUNTAIN.clone(),
