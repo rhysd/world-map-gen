@@ -3,7 +3,6 @@ extern crate rand;
 use self::rand::seq::SliceRandom;
 use self::rand::Rng;
 use crate::board::{Board, Pos};
-use crate::error::Result;
 use crate::land;
 use std::collections::HashSet;
 
@@ -91,7 +90,7 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
         }
     }
 
-    pub fn gen(&mut self) -> Result<Board<'static>> {
+    pub fn gen(&mut self) -> Board<'static> {
         let mut tops = HashSet::with_capacity(self.num_tops);
 
         // Generate tops of mountains. Every point must be unique so using HashSet
@@ -133,7 +132,7 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
         }
         let towns = towns;
 
-        Ok(Board::build(self.width, self.height, |w, h| {
+        Board::build(self.width, self.height, |w, h| {
             let alt = self.altitudes[h][w];
             let p = Pos { x: w, y: h };
             let mut chosen = if tops.contains(&p) {
@@ -145,6 +144,6 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
             };
             chosen.altitude = alt;
             chosen
-        }))
+        })
     }
 }

@@ -21,10 +21,10 @@ fn board_size(width: Option<usize>, height: Option<usize>) -> Result<(usize, usi
     ))
 }
 
-pub enum Scale {
-    Small,
+pub enum Resolution {
+    Low,
     Middle,
-    Large,
+    High,
 }
 
 pub struct RandomBoardGen<R: Rng> {
@@ -50,15 +50,15 @@ impl RandomBoardGen<rngs::ThreadRng> {
 impl<R: Rng> RandomBoardGen<R> {
     pub fn gen(
         &mut self,
-        scale: Option<Scale>,
+        resolution: Option<Resolution>,
         width: Option<usize>,
         height: Option<usize>,
     ) -> Result<Board<'static>> {
         let (width, height) = board_size(width, height)?;
-        match scale {
-            Some(Scale::Small) => self.gen_small(width, height),
-            Some(Scale::Middle) => self.gen_middle(width, height),
-            Some(Scale::Large) => self.gen_large(width, height),
+        match resolution {
+            Some(Resolution::Low) => self.gen_small(width, height),
+            Some(Resolution::Middle) => self.gen_middle(width, height),
+            Some(Resolution::High) => self.gen_large(width, height),
             None => self.gen_auto(width, height),
         }
     }
@@ -93,7 +93,7 @@ impl<R: Rng> RandomBoardGen<R> {
             return Err(Error::TooSmallBoard(width, height));
         }
 
-        MiddleBoardGen::new(&mut self.rng, width, height).gen()
+        Ok(MiddleBoardGen::new(&mut self.rng, width, height).gen())
     }
 
     pub fn gen_large(&mut self, width: usize, height: usize) -> Result<Board<'static>> {
@@ -101,6 +101,6 @@ impl<R: Rng> RandomBoardGen<R> {
             return Err(Error::TooSmallBoard(width, height));
         }
 
-        LargeBoardGen::new(&mut self.rng, width, height).gen()
+        Ok(LargeBoardGen::new(&mut self.rng, width, height).gen())
     }
 }

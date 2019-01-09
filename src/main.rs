@@ -2,8 +2,8 @@ extern crate clap;
 extern crate rand;
 
 use clap::{App, Arg};
-use world_map_gen::{draw, gen};
 use std::fmt;
+use world_map_gen::{draw, gen};
 
 enum Error {
     GenFail(world_map_gen::error::Error),
@@ -45,10 +45,10 @@ where
 }
 
 fn main() -> Result<(), Error> {
-    let matches = App::new("game-map-gen")
+    let matches = App::new("world-map-gen")
         .version("0.1")
         .author("rhysd <https://rhysd.github.io>")
-        .about("Random game map generator")
+        .about("Random game world map generator")
         .arg(
             Arg::with_name("seed")
                 .short("s")
@@ -71,11 +71,12 @@ fn main() -> Result<(), Error> {
                 .help("Board height in number of cells"),
         )
         .arg(
-            Arg::with_name("scale")
-                .long("scale")
+            Arg::with_name("resolution")
+                .short("r")
+                .long("resolution")
                 .value_name("STRING")
-                .possible_values(&["small", "middle", "large"])
-                .help("Map scale"),
+                .possible_values(&["low", "middle", "high"])
+                .help("Resolution of world map"),
         )
         .arg(
             Arg::with_name("altitude")
@@ -88,17 +89,17 @@ fn main() -> Result<(), Error> {
     let seed = parse_opt("seed", matches.value_of("seed"))?;
     let width = parse_opt("width", matches.value_of("width"))?;
     let height = parse_opt("height", matches.value_of("height"))?;
-    let scale = matches.value_of("scale").map(|s| match s {
-        "small" => gen::Scale::Small,
-        "middle" => gen::Scale::Middle,
-        "large" => gen::Scale::Large,
+    let resolution = matches.value_of("resolution").map(|s| match s {
+        "low" => gen::Resolution::Low,
+        "middle" => gen::Resolution::Middle,
+        "high" => gen::Resolution::High,
         _ => unreachable!(),
     });
 
     let board = if let Some(seed) = seed {
-        gen::RandomBoardGen::from_seed(seed).gen(scale, width, height)?
+        gen::RandomBoardGen::from_seed(seed).gen(resolution, width, height)?
     } else {
-        gen::RandomBoardGen::new().gen(scale, width, height)?
+        gen::RandomBoardGen::new().gen(resolution, width, height)?
     };
 
     draw::draw_term(&board, matches.is_present("altitude"))?;

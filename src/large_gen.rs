@@ -3,7 +3,6 @@ extern crate rand;
 use self::rand::seq::SliceRandom;
 use self::rand::Rng;
 use crate::board::{Board, Pos};
-use crate::error::Result;
 use crate::land;
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
@@ -387,7 +386,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
             .collect()
     }
 
-    pub fn gen(&mut self) -> Result<Board<'static>> {
+    pub fn gen(&mut self) -> Board<'static> {
         let tops = self.tops();
 
         // Calculate altitude of cells
@@ -399,7 +398,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         let towns = self.towns();
         let paths = self.paths(&towns);
 
-        Ok(Board::build(self.width, self.height, |w, h| {
+        Board::build(self.width, self.height, |w, h| {
             let alt = self.altitudes[h][w];
             let p = Pos { x: w, y: h };
             let mut land = if tops.contains(&p) {
@@ -413,6 +412,6 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
             };
             land.altitude = alt;
             land
-        }))
+        })
     }
 }
