@@ -44,7 +44,7 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
     fn land_kind(altitude: u8) -> land::LandKind {
         match altitude {
             0...10 => land::LandKind::Sea,
-            11...40 => land::LandKind::Ground,
+            11...40 => land::LandKind::Plain,
             41...70 => land::LandKind::Forest,
             71...99 => land::LandKind::Mountain,
             _ => unreachable!(),
@@ -63,20 +63,20 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
         let altitudes = slope.altitudes;
         let tops = slope.tops;
 
-        let mut grounds = Vec::new();
+        let mut plains = Vec::new();
         for (h, line) in altitudes.iter().enumerate() {
             for (w, alt) in line.iter().enumerate() {
-                if Self::land_kind(*alt) == land::LandKind::Ground {
-                    grounds.push(Pos { x: w, y: h });
+                if Self::land_kind(*alt) == land::LandKind::Plain {
+                    plains.push(Pos { x: w, y: h });
                 }
             }
         }
-        grounds.as_mut_slice().shuffle(&mut self.rng);
-        let grounds = grounds;
+        plains.as_mut_slice().shuffle(&mut self.rng);
+        let plains = plains;
 
         let mut towns = HashSet::with_capacity(self.num_towns);
 
-        for g in grounds.iter() {
+        for g in plains.iter() {
             if towns.len() == self.num_towns {
                 break;
             }

@@ -55,10 +55,10 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         match altitude {
             0...40 => land::LandKind::DeepSea,
             41...55 => land::LandKind::Sea,
-            56...70 => land::LandKind::Ground,
+            56...70 => land::LandKind::Plain,
             71...80 => land::LandKind::Forest,
             81...90 => land::LandKind::Mountain,
-            91...99 => land::LandKind::Alpine,
+            91...99 => land::LandKind::Highland,
             _ => unreachable!(),
         }
     }
@@ -70,10 +70,10 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
             match kind {
                 land::LandKind::DeepSea => 0,
                 land::LandKind::Sea => 16,
-                land::LandKind::Ground => 8,
+                land::LandKind::Plain => 8,
                 land::LandKind::Forest => 4,
                 land::LandKind::Mountain => 2,
-                land::LandKind::Alpine => 1,
+                land::LandKind::Highland => 1,
                 _ => unreachable!(),
             }
         }
@@ -113,7 +113,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                     || x == 0
                     || y == self.height - 1
                     || x == self.width - 1
-                    || Self::land_kind(altitudes[y][x]) != land::LandKind::Ground
+                    || Self::land_kind(altitudes[y][x]) != land::LandKind::Plain
                 {
                     fitness[y][x] = 0;
                 }
@@ -163,10 +163,10 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
             match kind {
                 land::LandKind::DeepSea => 64,
                 land::LandKind::Sea => 32,
-                land::LandKind::Ground => 1,
+                land::LandKind::Plain => 1,
                 land::LandKind::Forest => 4,
                 land::LandKind::Mountain => 8,
-                land::LandKind::Alpine => 16,
+                land::LandKind::Highland => 16,
                 _ => unreachable!(),
             }
         }

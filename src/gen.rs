@@ -77,7 +77,7 @@ impl<R: Rng> RandomBoardGen<R> {
             let alt = self.rng.gen_range(0, 100);
             let mut chosen = match alt {
                 0...15 => land::SEA.clone(),
-                16...55 => land::GROUND.clone(),
+                16...55 => land::PLAIN.clone(),
                 56...85 => land::FOREST.clone(),
                 86...99 => land::MOUNTAIN.clone(),
                 _ => unreachable!(),
@@ -131,7 +131,7 @@ mod tests {
                 let p = Pos { x, y };
                 let l = b.at(&p);
                 assert!(
-                    [Sea, Ground, Forest, Mountain].contains(&l.kind),
+                    [Sea, Plain, Forest, Mountain].contains(&l.kind),
                     "{:?} at {:?}",
                     l,
                     p
@@ -154,7 +154,7 @@ mod tests {
                 let p = Pos { x, y };
                 let l = b.at(&p);
                 assert!(
-                    [Sea, Ground, Forest, Mountain, Top, Town].contains(&l.kind),
+                    [Sea, Plain, Forest, Mountain, Top, Town].contains(&l.kind),
                     "{:?} at {:?}",
                     l,
                     p
@@ -163,7 +163,7 @@ mod tests {
                     found_top = true;
                 }
                 if l.kind == Town {
-                    // The same altitude as ground
+                    // The same altitude as plains
                     assert!(11 <= l.altitude && l.altitude < 40);
                 }
                 assert!(l.altitude < 100);
@@ -189,7 +189,7 @@ mod tests {
                 let p = Pos { x, y };
                 let l = b.at(&p);
                 assert!(
-                    [DeepSea, Sea, Ground, Forest, Mountain, Alpine, Top, Town, Path]
+                    [DeepSea, Sea, Plain, Forest, Mountain, Highland, Top, Town, Path]
                         .contains(&l.kind),
                     "{:?} at {:?}",
                     l,

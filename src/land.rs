@@ -5,35 +5,6 @@ extern crate termcolor;
 use crate::color;
 use termcolor::{Color, ColorSpec};
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
-pub enum LandKind {
-    Sea,
-    Mountain,
-    Forest,
-    Ground,
-    Town,
-    Top,
-    Alpine,
-    DeepSea,
-    Path,
-}
-
-impl LandKind {
-    pub fn constant(self) -> Land<'static> {
-        match self {
-            LandKind::Sea => SEA.clone(),
-            LandKind::Mountain => MOUNTAIN.clone(),
-            LandKind::Forest => FOREST.clone(),
-            LandKind::Ground => GROUND.clone(),
-            LandKind::Town => TOWN.clone(),
-            LandKind::Top => TOP.clone(),
-            LandKind::Alpine => ALPINE.clone(),
-            LandKind::DeepSea => DEEPSEA.clone(),
-            LandKind::Path => PATH.clone(),
-        }
-    }
-}
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct Land<'a> {
     pub kind: LandKind,
@@ -55,7 +26,30 @@ impl<'a> serde::Serialize for Land<'a> {
 }
 
 macro_rules! define_lands {
-    ($($name:ident = ($kind:ident, $color:expr);)+) => {
+    ($($name:ident = ($kind:ident, $color:expr, $legend:expr);)+) => {
+        #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+        pub enum LandKind {
+            $($kind,)+
+        }
+
+        impl LandKind {
+            pub fn constant(self) -> Land<'static> {
+                match self {
+                    $(
+                        LandKind::$kind => $name.clone(),
+                    )+
+                }
+            }
+
+            pub fn legend(self) -> &'static str {
+                match self {
+                    $(
+                        LandKind::$kind => $legend,
+                    )+
+                }
+            }
+        }
+
         lazy_static! {
             $(
                 pub static ref $name: Land<'static> = Land {
@@ -74,15 +68,15 @@ macro_rules! define_lands {
 }
 
 define_lands! {
-    SEA      = (Sea, 81);
-    MOUNTAIN = (Mountain, 94);
-    FOREST   = (Forest, 22);
-    GROUND   = (Ground, 118);
-    TOWN     = (Town, 226);
-    TOP      = (Top, 102);
-    ALPINE   = (Alpine, 58);
-    DEEPSEA  = (DeepSea, 63);
-    PATH     = (Path, 193);
+    SEA      = (Sea,      81, "Sea");
+    MOUNTAIN = (Mountain, 94, "Mountain");
+    FOREST   = (Forest,   22, "Forest");
+    PLAIN    = (Plain,   118, "Plain");
+    TOWN     = (Town,    226, "Town");
+    TOP      = (Top,     102, "Top of Mountain");
+    ALPINE   = (Highland, 58, "Highland");
+    DEEPSEA  = (DeepSea,  63, "Deep Sea");
+    PATH     = (Path,    193, "Path");
 }
 
 #[cfg(test)]
@@ -97,10 +91,10 @@ mod tests {
             LandKind::Sea,
             LandKind::Mountain,
             LandKind::Forest,
-            LandKind::Ground,
+            LandKind::Plain,
             LandKind::Town,
             LandKind::Top,
-            LandKind::Alpine,
+            LandKind::Highland,
             LandKind::DeepSea,
             LandKind::Path,
         ] {
