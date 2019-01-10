@@ -19,7 +19,7 @@ pub struct MiddleBoardGen<'a, R: Rng + 'a> {
 
 impl<'a, R: Rng> MiddleBoardGen<'a, R> {
     pub fn new<'b: 'a>(rng: &'b mut R, width: usize, height: usize) -> Self {
-        let num_towns = width * height / 2048 + rng.gen_range(0, 4);
+        let num_towns = width * height / 2048 + rng.gen_range(1, 4);
         let min_distance = if num_towns != 0 {
             (width + height) / num_towns
         } else {

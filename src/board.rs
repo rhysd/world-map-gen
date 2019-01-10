@@ -31,7 +31,7 @@ impl Pos {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, PartialEq, Serialize)]
 pub struct Row<'a> {
     cols: Vec<Land<'a>>,
 }
@@ -64,11 +64,11 @@ impl<'a> IndexMut<usize> for Row<'a> {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, PartialEq, Serialize)]
 pub struct Board<'a> {
+    pub width: usize,
+    pub height: usize,
     rows: Vec<Row<'a>>,
-    width: usize,
-    height: usize,
 }
 
 impl<'a> Board<'a> {
@@ -130,5 +130,31 @@ impl<'a> IndexMut<usize> for Board<'a> {
     #[inline]
     fn index_mut(&mut self, idx: usize) -> &mut Row<'a> {
         &mut self.rows[idx]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::land::LandKind;
+    use termcolor::ColorSpec;
+
+    #[test]
+    fn build_board() {
+        let board = Board::build(2, 3, |x, y| Land {
+            kind: LandKind::Town,
+            char: "hi",
+            color: ColorSpec::default(),
+            altitude: (x + 2 * y) as u8,
+        });
+        assert_eq!(board.width, 2);
+        assert_eq!(board.height, 3);
+        for y in 0..board.height {
+            for x in 0..board.width {
+                let land = board.at(&Pos { x, y });
+                assert_eq!(land.kind, LandKind::Town);
+                assert_eq!(land.altitude, (x + 2 * y) as u8);
+            }
+        }
     }
 }

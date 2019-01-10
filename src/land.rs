@@ -84,3 +84,32 @@ define_lands! {
     DEEPSEA  = (DeepSea, 63);
     PATH     = (Path, 193);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    #[test]
+    fn constants() {
+        let mut saw = HashSet::new();
+        for kind in &[
+            LandKind::Sea,
+            LandKind::Mountain,
+            LandKind::Forest,
+            LandKind::Ground,
+            LandKind::Town,
+            LandKind::Top,
+            LandKind::Alpine,
+            LandKind::DeepSea,
+            LandKind::Path,
+        ] {
+            let land = kind.constant();
+            assert_eq!(&land.kind, kind);
+            match land.color.fg() {
+                Some(Color::Ansi256(c)) => assert!(saw.insert(*c), "{}", *c),
+                c => assert!(false, "{:?}", c),
+            }
+        }
+    }
+}

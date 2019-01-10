@@ -78,12 +78,54 @@ impl<'a, R: Rng> SlopeGen<'a, R> {
     }
 
     pub fn gen(&mut self) {
-        println!("num tops: {}", self.num_tops);
         while self.tops.len() < self.num_tops {
             let x = self.rng.gen_range(0, self.width);
             let y = self.rng.gen_range(0, self.height);
             self.slope(99, x, y);
             self.tops.insert(Pos { x, y });
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn generate_slope() {
+        let mut rng = rand::thread_rng();
+        let mut slope = SlopeGen::new(&mut rng, 3, 4, 1, 2);
+        slope.gen();
+
+        let alt = slope.altitudes;
+        let top = slope.tops;
+
+        assert_eq!(alt.len(), 4); // height
+        assert_eq!(alt[0].len(), 3); // width
+        assert_eq!(top.len(), 2);
+
+        for y in 0..4 {
+            for x in 0..3 {
+                let a = alt[y][x];
+                if top.contains(&Pos { x, y }) {
+                    assert_eq!(a, 99);
+                } else {
+                    assert!(90 < a && a <= 99);
+                }
+            }
+        }
+
+        for Pos { x, y } in top.into_iter() {
+            for (x, y) in &[
+                (x, y.wrapping_sub(1)),
+                (x, y + 1),
+                (x.wrapping_sub(1), y),
+                (x + 1, y),
+            ] {
+                if *x < 3 && *y < 4 {
+                    let a = alt[*y][*x];
+                    assert!(a == 98 || a == 99);
+                }
+            }
         }
     }
 }
