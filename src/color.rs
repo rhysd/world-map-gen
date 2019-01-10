@@ -315,3 +315,66 @@ pub fn serializable_spec<'a>(spec: &'a ColorSpec) -> SerializableColorSpec<'a> {
         intense: spec.intense(),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn serialize_spec_8bit_and_256bit() {
+        let mut c = ColorSpec::new();
+        c.set_fg(Some(Color::Ansi256(156)));
+        c.set_bg(Some(Color::Magenta));
+        c.set_bold(true);
+        c.set_intense(true);
+        let actual = serde_json::to_value(&serializable_spec(&c)).unwrap();
+        let expect: serde_json::Value = serde_json::from_str(
+            r##"{
+                "fg": "#afff87",
+                "bg": "#800080",
+                "bold": true,
+                "underline": false,
+                "intense": true
+            }"##,
+        )
+        .unwrap();
+        assert_eq!(actual, expect);
+    }
+
+    #[test]
+    fn serialize_spec_dark_256bit_and_rgb() {
+        let mut c = ColorSpec::new();
+        c.set_fg(Some(Color::Ansi256(232)));
+        c.set_bg(Some(Color::Rgb(0x12, 0x34, 0x56)));
+        c.set_underline(true);
+        let actual = serde_json::to_value(&serializable_spec(&c)).unwrap();
+        let expect: serde_json::Value = serde_json::from_str(
+            r##"{
+                "fg": "#080808",
+                "bg": "#123456",
+                "bold": false,
+                "underline": true,
+                "intense": false
+            }"##,
+        )
+        .unwrap();
+        assert_eq!(actual, expect);
+    }
+
+    #[test]
+    fn serialize_spec_no_color() {
+        let c = ColorSpec::new();
+        let actual = serde_json::to_value(&serializable_spec(&c)).unwrap();
+        let expect: serde_json::Value = serde_json::from_str(
+            r##"{
+                "fg": null,
+                "bg": null,
+                "bold": false,
+                "underline": false,
+                "intense": false
+            }"##,
+        )
+        .unwrap();
+        assert_eq!(actual, expect);
+    }
+}
