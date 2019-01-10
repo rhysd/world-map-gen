@@ -11,3 +11,4 @@ pub mod gen;
 pub mod land;
 pub mod large_gen;
 pub mod middle_gen;
+pub mod slope;

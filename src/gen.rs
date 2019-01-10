@@ -54,15 +54,15 @@ impl<R: Rng> RandomBoardGen<R> {
         height: Option<usize>,
     ) -> Result<Board<'static>> {
         let (width, height) = board_size(width, height)?;
-        match resolution {
+        Ok(match resolution {
             Some(Resolution::Low) => self.gen_small(width, height),
             Some(Resolution::Middle) => self.gen_middle(width, height),
             Some(Resolution::High) => self.gen_large(width, height),
             None => self.gen_auto(width, height),
-        }
+        })
     }
 
-    pub fn gen_auto(&mut self, width: usize, height: usize) -> Result<Board<'static>> {
+    pub fn gen_auto(&mut self, width: usize, height: usize) -> Board<'static> {
         if width < 15 && height < 15 {
             self.gen_small(width, height)
         } else if width < 120 && height < 120 {
@@ -72,8 +72,8 @@ impl<R: Rng> RandomBoardGen<R> {
         }
     }
 
-    pub fn gen_small(&mut self, width: usize, height: usize) -> Result<Board<'static>> {
-        Ok(Board::build(width, height, |_, _| {
+    pub fn gen_small(&mut self, width: usize, height: usize) -> Board<'static> {
+        Board::build(width, height, |_, _| {
             let alt = self.rng.gen_range(0, 100);
             let mut chosen = match alt {
                 0...15 => land::SEA.clone(),
@@ -84,22 +84,14 @@ impl<R: Rng> RandomBoardGen<R> {
             };
             chosen.altitude = alt;
             chosen
-        }))
+        })
     }
 
-    pub fn gen_middle(&mut self, width: usize, height: usize) -> Result<Board<'static>> {
-        if width * height < 10 {
-            return Err(Error::TooSmallBoard(width, height));
-        }
-
-        Ok(MiddleBoardGen::new(&mut self.rng, width, height).gen())
+    pub fn gen_middle(&mut self, width: usize, height: usize) -> Board<'static> {
+        MiddleBoardGen::new(&mut self.rng, width, height).gen()
     }
 
-    pub fn gen_large(&mut self, width: usize, height: usize) -> Result<Board<'static>> {
-        if width * height < 10 {
-            return Err(Error::TooSmallBoard(width, height));
-        }
-
-        Ok(LargeBoardGen::new(&mut self.rng, width, height).gen())
+    pub fn gen_large(&mut self, width: usize, height: usize) -> Board<'static> {
+        LargeBoardGen::new(&mut self.rng, width, height).gen()
     }
 }

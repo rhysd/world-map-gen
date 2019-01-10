@@ -4,6 +4,7 @@ use self::rand::seq::SliceRandom;
 use self::rand::Rng;
 use crate::board::{Board, Pos};
 use crate::land;
+use crate::slope::SlopeGen;
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::rc::Rc;
@@ -18,7 +19,6 @@ pub struct LargeBoardGen<'a, R: Rng + 'a> {
     rng: &'a mut R,
     width: usize,
     height: usize,
-    altitudes: Vec<Vec<u8>>,
     max_towns: usize,
     num_tops: usize,
     town_min_cost: usize,
@@ -28,15 +28,6 @@ pub struct LargeBoardGen<'a, R: Rng + 'a> {
 
 impl<'a, R: Rng> LargeBoardGen<'a, R> {
     pub fn new<'b: 'a>(rng: &'b mut R, width: usize, height: usize) -> Self {
-        let mut altitudes = Vec::with_capacity(height);
-        for _ in 0..height {
-            let mut row = Vec::with_capacity(width);
-            for _ in 0..width {
-                row.push(0);
-            }
-            altitudes.push(row);
-        }
-
         let max_towns = rng.gen_range(10, 16);
         let num_tops = width * height / 2048 + rng.gen_range(0, 4);
         let town_min_cost = if max_towns > 0 {
@@ -50,7 +41,6 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         LargeBoardGen {
             rng,
             height,
-            altitudes,
             width,
             max_towns,
             num_tops,
@@ -73,55 +63,8 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         }
     }
 
-    #[inline]
-    fn land_kind_at(&self, x: usize, y: usize) -> land::LandKind {
-        Self::land_kind(self.altitudes[y][x])
-    }
-
-    // Down a slope
-    fn down(&mut self, altitude: u8, x: usize, y: usize) {
-        let delta = self.rng.gen_range(0, self.down_rate);
-        if altitude < delta {
-            // Skip when altitude is min since default value of altitude is 0
-            return;
-        }
-        let altitude = altitude - delta;
-        if self.altitudes[y][x] >= altitude {
-            // Skip when the altitude is already calculated as other mountain's slope
-            return;
-        }
-        self.slope(altitude, x, y);
-    }
-
-    // Create a slope of mountain
-    fn slope(&mut self, altitude: u8, x: usize, y: usize) {
-        self.altitudes[y][x] = altitude;
-        if x > 0 {
-            self.down(altitude, x - 1, y);
-        }
-        if self.width - 1 > x {
-            self.down(altitude, x + 1, y);
-        }
-        if y > 0 {
-            self.down(altitude, x, y - 1);
-        }
-        if self.height - 1 > y {
-            self.down(altitude, x, y + 1);
-        }
-    }
-
-    fn tops(&mut self) -> HashSet<Pos> {
-        let mut tops = HashSet::with_capacity(self.num_tops);
-        while tops.len() < self.num_tops {
-            let x = self.rng.gen_range(0, self.width);
-            let y = self.rng.gen_range(0, self.height);
-            tops.insert(Pos { x, y });
-        }
-        tops
-    }
-
     #[allow(clippy::needless_range_loop)]
-    fn towns(&mut self) -> HashSet<Pos> {
+    fn towns(&mut self, altitudes: &Vec<Vec<u8>>) -> HashSet<Pos> {
         #[inline]
         fn land_fitness(kind: land::LandKind) -> u8 {
             match kind {
@@ -140,7 +83,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         for y in 0..self.height {
             let mut row = Vec::with_capacity(self.width);
             for x in 0..self.width {
-                row.push(land_fitness(self.land_kind_at(x, y)))
+                row.push(land_fitness(Self::land_kind(altitudes[y][x])))
             }
             fitness.push(row);
         }
@@ -170,7 +113,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                     || x == 0
                     || y == self.height - 1
                     || x == self.width - 1
-                    || self.land_kind_at(x, y) != land::LandKind::Ground
+                    || Self::land_kind(altitudes[y][x]) != land::LandKind::Ground
                 {
                     fitness[y][x] = 0;
                 }
@@ -214,7 +157,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     }
 
     // Get shortest path of the connection using Dijkstra's algorithm
-    fn shortest_path<'b>(&self, conn: &Connection<'b>) -> Vec<Pos> {
+    fn shortest_path<'b>(&self, conn: &Connection<'b>, altitudes: &Vec<Vec<u8>>) -> Vec<Pos> {
         #[inline]
         fn land_cost(kind: land::LandKind) -> usize {
             match kind {
@@ -293,12 +236,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                 (Some(x), y.checked_add(1)),
             ] {
                 let (x, y) = match pair {
-                    (Some(x), Some(y)) => {
-                        if *x >= self.width || *y >= self.height {
-                            continue;
-                        }
-                        (*x, *y)
-                    }
+                    (Some(x), Some(y)) if *x < self.width && *y < self.height => (*x, *y),
                     _ => continue,
                 };
 
@@ -309,7 +247,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                     }
                 }
 
-                let cost = cost + land_cost(self.land_kind_at(x, y));
+                let cost = cost + land_cost(Self::land_kind(altitudes[y][x]));
                 let pos = Pos { x, y };
 
                 if let Some(c) = costs.get(&pos) {
@@ -332,7 +270,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     }
 
     // Get all cells of paths
-    fn paths(&mut self, towns: &HashSet<Pos>) -> HashSet<Pos> {
+    fn paths(&mut self, towns: &HashSet<Pos>, altitudes: &Vec<Vec<u8>>) -> HashSet<Pos> {
         towns
             .iter()
             .map(|town| {
@@ -388,25 +326,28 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                     true
                 }
             })
-            .map(|conn| self.shortest_path(&conn))
+            .map(|conn| self.shortest_path(&conn, altitudes))
             .flatten()
             .collect()
     }
 
     pub fn gen(&mut self) -> Board<'static> {
-        let tops = self.tops();
+        let mut slope = SlopeGen::new(
+            self.rng,
+            self.width,
+            self.height,
+            self.down_rate,
+            self.num_tops,
+        );
+        slope.gen();
+        let altitudes = slope.altitudes;
+        let tops = slope.tops;
 
-        // Calculate altitude of cells
-        for Pos { x, y } in tops.iter() {
-            // Altitude is 0~99. Top is always at 99
-            self.slope(99, *x, *y);
-        }
-
-        let towns = self.towns();
-        let paths = self.paths(&towns);
+        let towns = self.towns(&altitudes);
+        let paths = self.paths(&towns, &altitudes);
 
         Board::build(self.width, self.height, |w, h| {
-            let alt = self.altitudes[h][w];
+            let alt = altitudes[h][w];
             let p = Pos { x: w, y: h };
             let mut land = if tops.contains(&p) {
                 land::TOP.clone()

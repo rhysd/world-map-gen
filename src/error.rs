@@ -5,7 +5,6 @@ use std::io;
 pub enum Error {
     IoError(io::Error),
     CannotDetermineTermsize,
-    TooSmallBoard(usize, usize),
 }
 
 impl fmt::Display for Error {
@@ -13,9 +12,6 @@ impl fmt::Display for Error {
         match self {
             Error::IoError(e) => write!(f, "{}", e),
             Error::CannotDetermineTermsize => write!(f, "Cannot determine terminal size"),
-            Error::TooSmallBoard(width, height) => {
-                write!(f, "{}x{} board is too small", width, height)
-            }
         }
     }
 }
