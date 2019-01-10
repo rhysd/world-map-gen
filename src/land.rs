@@ -27,12 +27,13 @@ impl<'a> serde::Serialize for Land<'a> {
 
 macro_rules! define_lands {
     ($($name:ident = ($kind:ident, $color:expr, $legend:expr);)+) => {
-        #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize)]
+        #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize)]
         pub enum LandKind {
             $($kind,)+
         }
 
         impl LandKind {
+            #[inline]
             pub fn constant(self) -> Land<'static> {
                 match self {
                     $(
@@ -41,6 +42,7 @@ macro_rules! define_lands {
                 }
             }
 
+            #[inline]
             pub fn legend(self) -> &'static str {
                 match self {
                     $(

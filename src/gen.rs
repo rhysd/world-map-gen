@@ -164,7 +164,7 @@ mod tests {
                 }
                 if l.kind == Town {
                     // The same altitude as plains
-                    assert!(11 <= l.altitude && l.altitude < 40);
+                    assert!(11 <= l.altitude && l.altitude <= 40);
                 }
                 assert!(l.altitude < 100);
             }
