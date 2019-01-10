@@ -20,14 +20,11 @@ pub struct MiddleBoardGen<'a, R: Rng + 'a> {
 impl<'a, R: Rng> MiddleBoardGen<'a, R> {
     pub fn new<'b: 'a>(rng: &'b mut R, width: usize, height: usize) -> Self {
         let num_towns = width * height / 2048 + rng.gen_range(1, 4);
-        let min_distance = if num_towns != 0 {
-            (width + height) / num_towns
-        } else {
-            width + height
-        };
+        let both = width + height;
+        let min_distance = both.checked_div(num_towns).unwrap_or(both);
         // Note: Standard value is 20 at 48x36 board
         let down_rate = 12 + (48 * 36 * 8 / (width * height)) as u8;
-        let num_tops = 3 + (width + height) * rng.gen_range(3, 7) / (48 + 36);
+        let num_tops = 3 + both * rng.gen_range(3, 7) / (48 + 36);
 
         MiddleBoardGen {
             rng,

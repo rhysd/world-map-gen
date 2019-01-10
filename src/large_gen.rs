@@ -30,12 +30,9 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     pub fn new<'b: 'a>(rng: &'b mut R, width: usize, height: usize) -> Self {
         let max_towns = rng.gen_range(10, 16);
         let num_tops = width * height / 2048 + rng.gen_range(0, 4);
-        let town_min_cost = if max_towns > 0 {
-            width / max_towns
-        } else {
-            width
-        };
-        let conn_max_cost = width / 2;
+        let average_len = (width + height) / 2;
+        let town_min_cost = average_len.checked_div(max_towns).unwrap_or(average_len);
+        let conn_max_cost = average_len / 2;
         let down_rate = 6; // Set smaller down rate for larger map
 
         LargeBoardGen {
