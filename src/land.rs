@@ -25,6 +25,17 @@ impl<'a> serde::Serialize for Land<'a> {
     }
 }
 
+impl Default for Land<'static> {
+    fn default() -> Land<'static> {
+        Land {
+            kind: LandKind::Plain,
+            char: "██",
+            color: ColorSpec::default(),
+            altitude: 0,
+        }
+    }
+}
+
 macro_rules! define_lands {
     ($($name:ident = ($kind:ident, $color:expr, $legend:expr);)+) => {
         #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize)]

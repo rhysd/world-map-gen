@@ -129,7 +129,7 @@ mod tests {
         for y in 0..h {
             for x in 0..w {
                 let p = Pos { x, y };
-                let l = b.at(&p);
+                let l = &b[p];
                 assert!(
                     [Sea, Plain, Forest, Mountain].contains(&l.kind),
                     "{:?} at {:?}",
@@ -152,7 +152,7 @@ mod tests {
         for y in 0..h {
             for x in 0..w {
                 let p = Pos { x, y };
-                let l = b.at(&p);
+                let l = &b[p];
                 assert!(
                     [Sea, Plain, Forest, Mountain, Top, Town].contains(&l.kind),
                     "{:?} at {:?}",
@@ -187,7 +187,7 @@ mod tests {
         for y in 0..h {
             for x in 0..w {
                 let p = Pos { x, y };
-                let l = b.at(&p);
+                let l = &b[p];
                 assert!(
                     [DeepSea, Sea, Plain, Forest, Mountain, Highland, Top, Town, Path]
                         .contains(&l.kind),

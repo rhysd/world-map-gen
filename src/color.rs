@@ -2,7 +2,7 @@ extern crate serde;
 extern crate serde_json;
 extern crate termcolor;
 extern crate termcolor2rgb;
-use termcolor::{Color, ColorSpec};
+use termcolor::ColorSpec;
 
 pub struct SerializableColorSpec<'a>(pub &'a ColorSpec);
 
@@ -33,6 +33,7 @@ impl<'a> serde::Serialize for SerializableColorSpec<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use termcolor::Color;
 
     #[test]
     fn serialize_spec_8bit_and_256bit() {

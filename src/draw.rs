@@ -11,7 +11,7 @@ pub fn draw_term(board: &Board, show_altitude: bool) -> Result<()> {
     let mut prev = ColorSpec::default();
     let mut legends = HashMap::new();
     for row in board.rows() {
-        for cell in row.cols() {
+        for cell in row.iter() {
             if prev != cell.color {
                 stdout.set_color(&cell.color)?;
                 prev = cell.color.clone();
