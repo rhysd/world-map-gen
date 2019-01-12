@@ -225,6 +225,8 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                 return verts;
             }
 
+            // Note: OK to create an Rc pointer in advance since at least one point iterated in below loop is valid.
+            let prev = Rc::new(prev);
             let Pos { x, y } = pos;
             for pair in &[
                 (Some(x), y.checked_sub(1)),
@@ -237,7 +239,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                     _ => continue,
                 };
 
-                if let Route::Cons(pos, ..) = prev {
+                if let Route::Cons(pos, ..) = *prev {
                     if pos.x == x && pos.y == y {
                         // Going back to previous position never happens
                         continue;
@@ -257,7 +259,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                 state.push(Vert {
                     cost,
                     pos,
-                    prev: Route::Cons(pos, Rc::new(prev.clone())),
+                    prev: Route::Cons(pos, prev.clone()),
                 });
             }
         }
