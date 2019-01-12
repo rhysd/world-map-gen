@@ -61,7 +61,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     }
 
     #[allow(clippy::needless_range_loop)]
-    fn towns(&mut self, altitudes: &Vec<Vec<u8>>) -> HashSet<Pos> {
+    fn towns(&mut self, altitudes: &[Vec<u8>]) -> HashSet<Pos> {
         #[inline]
         fn land_fitness(kind: land::LandKind) -> u8 {
             match kind {
@@ -154,7 +154,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     }
 
     // Get shortest path of the connection using Dijkstra's algorithm
-    fn shortest_path<'b>(&self, conn: &Connection<'b>, altitudes: &Vec<Vec<u8>>) -> Vec<Pos> {
+    fn shortest_path<'b>(&self, conn: &Connection<'b>, altitudes: &[Vec<u8>]) -> Vec<Pos> {
         #[inline]
         fn land_cost(kind: land::LandKind) -> usize {
             match kind {
@@ -267,7 +267,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     }
 
     // Get all cells of paths
-    fn paths(&mut self, towns: &HashSet<Pos>, altitudes: &Vec<Vec<u8>>) -> HashSet<Pos> {
+    fn paths(&mut self, towns: &HashSet<Pos>, altitudes: &[Vec<u8>]) -> HashSet<Pos> {
         towns
             .iter()
             .map(|town| {
