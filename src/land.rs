@@ -19,7 +19,7 @@ impl<'a> serde::Serialize for Land<'a> {
         let mut map = serializer.serialize_map(Some(4))?;
         map.serialize_entry("kind", &self.kind)?;
         map.serialize_entry("char", self.char)?;
-        map.serialize_entry("color", &color::serializable_spec(&self.color))?;
+        map.serialize_entry("color", &color::SerializableColorSpec(&self.color))?;
         map.serialize_entry("altitude", &self.altitude)?;
         map.end()
     }
