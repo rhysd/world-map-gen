@@ -23,18 +23,27 @@ pub fn draw_term(board: &Board, show_altitude: bool) -> Result<()> {
             }
             legends.entry(cell.kind.legend()).or_insert(cell);
         }
-        writeln!(stdout)?; // new line
+        writeln!(stdout)?;
     }
-
-    writeln!(stdout)?; // new line
 
     // Write legends
+    let term_width = board.width * 2; // since a cell consists of half-width character * 2
+    let mut width = usize::max_value();
     for (legend, cell) in legends.iter() {
+        let legend_len = cell.char.chars().count() + 3 + legend.len();
+        if width.saturating_add(legend_len) > term_width {
+            write!(stdout, "\n  ")?;
+            width = 2 + legend_len;
+        } else {
+            write!(stdout, ", ")?;
+            width += 2 + legend_len;
+        }
         stdout.set_color(&cell.color)?;
-        write!(stdout, "  {}", cell.char)?;
+        write!(stdout, "{}", cell.char)?;
         stdout.reset()?;
-        writeln!(stdout, " : {}", legend)?;
+        write!(stdout, " : {}", legend)?;
     }
+    writeln!(stdout)?;
 
     Ok(())
 }
