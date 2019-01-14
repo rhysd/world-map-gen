@@ -4,6 +4,7 @@ extern crate serde_json;
 use crate::land::Land;
 use std::collections::HashMap;
 use std::ops::{Index, IndexMut};
+use std::slice;
 
 //       width
 //  O--------------> x
@@ -36,37 +37,7 @@ impl Pos {
 pub struct Board<'a> {
     pub width: usize,
     pub height: usize,
-    cells: Vec<Vec<Land<'a>>>,
-}
-
-pub struct Iter<'a> {
-    cells: &'a [Vec<Land<'a>>],
-    x: usize,
-    y: usize,
-}
-
-impl<'a> Iterator for Iter<'a> {
-    type Item = &'a Land<'a>;
-
-    #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        (self.cells.len(), None)
-    }
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.y >= self.cells.len() {
-            return None;
-        }
-        let row = &self.cells[self.y];
-        if self.x < row.len() {
-            self.x += 1;
-            Some(&row[self.x - 1])
-        } else {
-            self.x = 0;
-            self.y += 1;
-            self.next()
-        }
-    }
+    cells: Vec<Land<'a>>,
 }
 
 impl<'a> Board<'a> {
@@ -74,13 +45,11 @@ impl<'a> Board<'a> {
     where
         F: FnMut(usize, usize) -> Land<'a>,
     {
-        let mut cells = Vec::with_capacity(height);
+        let mut cells = Vec::with_capacity(width * height);
         for y in 0..height {
-            let mut cols = Vec::with_capacity(width);
             for x in 0..width {
-                cols.push(builder(x, y));
+                cells.push(builder(x, y));
             }
-            cells.push(cols);
         }
         Board {
             cells,
@@ -100,27 +69,39 @@ impl<'a> Board<'a> {
     }
 
     #[inline]
-    pub fn at(&self, x: usize, y: usize) -> &Land {
-        &self.cells[y][x]
+    fn index_at(&self, x: usize, y: usize) -> usize {
+        y * self.width + x
     }
 
     #[inline]
-    pub fn rows(&self) -> std::slice::Iter<Vec<Land<'a>>> {
+    pub fn at(&self, x: usize, y: usize) -> &Land {
+        &self.cells[self.index_at(x, y)]
+    }
+
+    #[inline]
+    pub fn at_mut(&mut self, x: usize, y: usize) -> &'a mut Land {
+        let idx = self.index_at(x, y);
+        &mut self.cells[idx]
+    }
+
+    #[inline]
+    pub fn iter<'b>(&'b self) -> slice::Iter<'b, Land<'a>> {
         self.cells.iter()
     }
 
     #[inline]
-    pub fn at_mut<'b>(&mut self, p: &'b Pos) -> &'a mut Land {
-        &mut self.cells[p.y][p.x]
+    pub fn iter_mut<'b>(&'b mut self) -> slice::IterMut<'b, Land<'a>> {
+        self.cells.iter_mut()
     }
 
     #[inline]
-    pub fn iter(&self) -> Iter {
-        Iter {
-            cells: &self.cells,
-            x: 0,
-            y: 0,
-        }
+    pub fn rows<'b>(&'b self) -> slice::Chunks<'b, Land<'a>> {
+        self.cells.chunks(self.width)
+    }
+
+    #[inline]
+    pub fn rows_mut<'b>(&'b mut self) -> slice::ChunksMut<'b, Land<'a>> {
+        self.cells.chunks_mut(self.width)
     }
 }
 
@@ -129,24 +110,49 @@ impl<'a> Index<Pos> for Board<'a> {
 
     #[inline]
     fn index(&self, p: Pos) -> &Land<'a> {
-        &self.cells[p.y][p.x]
+        &self.cells[self.index_at(p.x, p.y)]
     }
 }
 
 impl<'a> IndexMut<Pos> for Board<'a> {
     #[inline]
     fn index_mut(&mut self, p: Pos) -> &mut Land<'a> {
-        &mut self.cells[p.y][p.x]
+        let idx = self.index_at(p.x, p.y);
+        &mut self.cells[idx]
     }
 }
 
 impl<'a> serde::Serialize for Board<'a> {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         use serde::ser::SerializeMap;
+
+        struct Cells<'a, 'b: 'a> {
+            w: usize,
+            h: usize,
+            vec: &'a Vec<Land<'b>>,
+        }
+        impl<'a, 'b> serde::Serialize for Cells<'a, 'b> {
+            fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+                use serde::ser::SerializeSeq;
+                let mut seq = serializer.serialize_seq(Some(self.h))?;
+                for row in self.vec.chunks(self.w) {
+                    seq.serialize_element(row)?;
+                }
+                seq.end()
+            }
+        }
+
         let mut map = serializer.serialize_map(Some(4))?;
         map.serialize_entry("width", &self.width)?;
         map.serialize_entry("height", &self.height)?;
-        map.serialize_entry("cells", &self.cells)?;
+        map.serialize_entry(
+            "cells",
+            &Cells {
+                w: self.width,
+                h: self.height,
+                vec: &self.cells,
+            },
+        )?;
 
         // Do not derive Serialize trait since legends should be contained in serialized JSON output
         let legends = self
@@ -210,5 +216,30 @@ mod tests {
         for _ in board.iter() {
             assert!(false);
         }
+    }
+
+    #[test]
+    fn iter_rows() {
+        let board = Board::build(2, 3, |x, y| Land {
+            kind: LandKind::Town,
+            char: "hi",
+            color: ColorSpec::default(),
+            altitude: (x + 2 * y) as u8,
+        });
+        for row in board.rows() {
+            assert_eq!(row.len(), 2);
+        }
+        assert_eq!(board.rows().count(), 3);
+
+        let mut board = Board::build(2, 3, |x, y| Land {
+            kind: LandKind::Town,
+            char: "hi",
+            color: ColorSpec::default(),
+            altitude: (x + 2 * y) as u8,
+        });
+        for row in board.rows_mut() {
+            assert_eq!(row.len(), 2);
+        }
+        assert_eq!(board.rows_mut().count(), 3);
     }
 }

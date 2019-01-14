@@ -4,11 +4,12 @@ extern crate lazy_static;
 extern crate serde_derive;
 
 pub mod board;
-pub mod color;
 pub mod draw;
 pub mod error;
 pub mod gen;
 pub mod land;
-pub mod large_gen;
-pub mod middle_gen;
-pub mod slope;
+
+mod color;
+mod large_gen;
+mod middle_gen;
+mod slope;
