@@ -29,9 +29,13 @@
 extern crate serde;
 extern crate serde_json;
 extern crate termcolor;
+#[cfg(target_arch = "wasm32")]
+extern crate wasm_bindgen;
 
 use crate::color;
 use termcolor::{Color, ColorSpec};
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::wasm_bindgen;
 
 /// Represents one cell in a board
 #[derive(Debug, Clone, PartialEq)]
