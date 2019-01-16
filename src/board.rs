@@ -5,6 +5,7 @@
 //! - Right direction represents X and width, left direction represents Y and height
 //!
 //! ```text,ignore
+//!       width
 //!  O--------------> x
 //! h|
 //! e|

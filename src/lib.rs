@@ -21,7 +21,7 @@
 //! - `error`: Error type which may be returned from a map generator
 //!
 //! ```rust
-//! use world_map_gen::gen::RandomBoardGen;
+//! use world_map_gen::RandomBoardGen;
 //!
 //! // Create generator instance with default random number generator
 //! let mut generator = RandomBoardGen::default();
@@ -63,3 +63,8 @@ mod color;
 mod large_gen;
 mod middle_gen;
 mod slope;
+
+pub use crate::board::Board;
+pub use crate::error::Result;
+pub use crate::gen::RandomBoardGen;
+pub use crate::land::LandKind;
