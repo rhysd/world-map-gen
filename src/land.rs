@@ -101,7 +101,7 @@ macro_rules! define_lands {
 
         lazy_static! {
             $(
-                pub static ref $name: Land<'static> = Land {
+                static ref $name: Land<'static> = Land {
                     kind: LandKind::$kind,
                     char: "██",
                     color: {

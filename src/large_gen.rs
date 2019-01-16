@@ -3,7 +3,7 @@ extern crate rand;
 use self::rand::seq::SliceRandom;
 use self::rand::Rng;
 use crate::board::{Board, Pos};
-use crate::land;
+use crate::land::LandKind;
 use crate::slope::SlopeGen;
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
@@ -48,14 +48,14 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     }
 
     #[inline]
-    fn land_kind(altitude: u8) -> land::LandKind {
+    fn land_kind(altitude: u8) -> LandKind {
         match altitude {
-            0...40 => land::LandKind::DeepSea,
-            41...55 => land::LandKind::Sea,
-            56...70 => land::LandKind::Plain,
-            71...80 => land::LandKind::Forest,
-            81...90 => land::LandKind::Mountain,
-            91...99 => land::LandKind::Highland,
+            0...40 => LandKind::DeepSea,
+            41...55 => LandKind::Sea,
+            56...70 => LandKind::Plain,
+            71...80 => LandKind::Forest,
+            81...90 => LandKind::Mountain,
+            91...99 => LandKind::Highland,
             _ => unreachable!(),
         }
     }
@@ -63,14 +63,14 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     #[allow(clippy::needless_range_loop)]
     fn towns(&mut self, altitudes: &[Vec<u8>]) -> HashSet<Pos> {
         #[inline]
-        fn land_fitness(kind: land::LandKind) -> u8 {
+        fn land_fitness(kind: LandKind) -> u8 {
             match kind {
-                land::LandKind::DeepSea => 0,
-                land::LandKind::Sea => 16,
-                land::LandKind::Plain => 8,
-                land::LandKind::Forest => 4,
-                land::LandKind::Mountain => 2,
-                land::LandKind::Highland => 1,
+                LandKind::DeepSea => 0,
+                LandKind::Sea => 16,
+                LandKind::Plain => 8,
+                LandKind::Forest => 4,
+                LandKind::Mountain => 2,
+                LandKind::Highland => 1,
                 _ => unreachable!(),
             }
         }
@@ -110,7 +110,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
                     || x == 0
                     || y == self.height - 1
                     || x == self.width - 1
-                    || Self::land_kind(altitudes[y][x]) != land::LandKind::Plain
+                    || Self::land_kind(altitudes[y][x]) != LandKind::Plain
                 {
                     fitness[y][x] = 0;
                 }
@@ -156,14 +156,14 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     // Get shortest path of the connection using Dijkstra's algorithm
     fn shortest_path<'b>(&self, conn: &Connection<'b>, altitudes: &[Vec<u8>]) -> Vec<Pos> {
         #[inline]
-        fn land_cost(kind: land::LandKind) -> usize {
+        fn land_cost(kind: LandKind) -> usize {
             match kind {
-                land::LandKind::DeepSea => 64,
-                land::LandKind::Sea => 32,
-                land::LandKind::Plain => 1,
-                land::LandKind::Forest => 4,
-                land::LandKind::Mountain => 8,
-                land::LandKind::Highland => 16,
+                LandKind::DeepSea => 64,
+                LandKind::Sea => 32,
+                LandKind::Plain => 1,
+                LandKind::Forest => 4,
+                LandKind::Mountain => 8,
+                LandKind::Highland => 16,
                 _ => unreachable!(),
             }
         }
@@ -349,11 +349,11 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
             let alt = altitudes[h][w];
             let p = Pos { x: w, y: h };
             let mut land = if tops.contains(&p) {
-                land::TOP.clone()
+                LandKind::Top.constant()
             } else if towns.contains(&p) {
-                land::TOWN.clone()
+                LandKind::Town.constant()
             } else if paths.contains(&p) {
-                land::PATH.clone()
+                LandKind::Path.constant()
             } else {
                 Self::land_kind(alt).constant()
             };

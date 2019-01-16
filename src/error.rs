@@ -1,5 +1,7 @@
 //! Provides error type to represent all kinds of errors which may occur while world map generations.
 
+extern crate serde_json;
+
 use std::fmt;
 use std::io;
 
@@ -8,6 +10,7 @@ use std::io;
 pub enum Error {
     IoError(io::Error),
     CannotDetermineTermsize,
+    NotJsonSerializable(serde_json::Error),
 }
 
 impl fmt::Display for Error {
@@ -15,6 +18,7 @@ impl fmt::Display for Error {
         match self {
             Error::IoError(e) => write!(f, "{}", e),
             Error::CannotDetermineTermsize => write!(f, "Cannot determine terminal size"),
+            Error::NotJsonSerializable(err) => write!(f, "Cannot serialize as JSON: {}", err),
         }
     }
 }
@@ -22,6 +26,12 @@ impl fmt::Display for Error {
 impl From<io::Error> for Error {
     fn from(err: io::Error) -> Error {
         Error::IoError(err)
+    }
+}
+
+impl From<serde_json::Error> for Error {
+    fn from(err: serde_json::Error) -> Error {
+        Error::NotJsonSerializable(err)
     }
 }
 

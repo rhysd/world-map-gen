@@ -44,7 +44,7 @@ extern crate term_size;
 use self::rand::{rngs, Rng};
 use crate::board::Board;
 use crate::error::{Error, Result};
-use crate::land;
+use crate::land::LandKind;
 use crate::large_gen::LargeBoardGen;
 use crate::middle_gen::MiddleBoardGen;
 
@@ -136,10 +136,10 @@ impl<R: Rng> RandomBoardGen<R> {
         Board::build(width, height, |_, _| {
             let alt = self.rng.gen_range(0, 100);
             let mut chosen = match alt {
-                0...15 => land::SEA.clone(),
-                16...55 => land::PLAIN.clone(),
-                56...85 => land::FOREST.clone(),
-                86...99 => land::MOUNTAIN.clone(),
+                0...15 => LandKind::Sea.constant(),
+                16...55 => LandKind::Plain.constant(),
+                56...85 => LandKind::Forest.constant(),
+                86...99 => LandKind::Mountain.constant(),
                 _ => unreachable!(),
             };
             chosen.altitude = alt;
@@ -186,8 +186,8 @@ mod tests {
     fn gen_small() {
         let (w, h) = (3, 4);
         let b = RandomBoardGen::default().gen_auto(w, h);
-        assert_eq!(b.width, w);
-        assert_eq!(b.height, h);
+        assert_eq!(b.width(), w);
+        assert_eq!(b.height(), h);
         for y in 0..h {
             for x in 0..w {
                 let p = Pos { x, y };
@@ -207,8 +207,8 @@ mod tests {
     fn gen_middle() {
         let (w, h) = (20, 20);
         let b = RandomBoardGen::default().gen_auto(w, h);
-        assert_eq!(b.width, w);
-        assert_eq!(b.height, h);
+        assert_eq!(b.width(), w);
+        assert_eq!(b.height(), h);
 
         let mut found_top = false;
         for y in 0..h {
@@ -239,8 +239,8 @@ mod tests {
     fn gen_large() {
         let (w, h) = (150, 200);
         let b = RandomBoardGen::default().gen_auto(w, h);
-        assert_eq!(b.width, w);
-        assert_eq!(b.height, h);
+        assert_eq!(b.width(), w);
+        assert_eq!(b.height(), h);
 
         let mut found_top = false;
         let mut found_town = false;

@@ -44,8 +44,8 @@ impl Pos {
 /// generator. This struct is JSON serializable with `serde_json`.
 #[derive(Debug, PartialEq)]
 pub struct Board<'a> {
-    pub width: usize,
-    pub height: usize,
+    width: usize,
+    height: usize,
     cells: Vec<Land<'a>>,
 }
 

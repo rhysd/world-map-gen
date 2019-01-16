@@ -2,6 +2,7 @@
 //!
 //! Terminal must support 256colors. And large map may require much time and CPU usage to render map.
 
+extern crate serde_json;
 extern crate termcolor;
 
 use self::termcolor::{BufferedStandardStream, ColorChoice, ColorSpec, WriteColor};
@@ -45,7 +46,7 @@ pub fn draw_term(board: &Board, show_altitude: bool) -> Result<()> {
     }
 
     // Write legends
-    let term_width = board.width * 2; // since a cell consists of half-width character * 2
+    let term_width = board.width() * 2; // since a cell consists of half-width character * 2
     let mut width = usize::max_value();
     for (legend, cell) in legends.iter() {
         let legend_len = cell.char.chars().count() + 3 + legend.len();
@@ -65,3 +66,72 @@ pub fn draw_term(board: &Board, show_altitude: bool) -> Result<()> {
 
     Ok(())
 }
+
+/// Render the given board as JSON to given writer. When deserializing the board as JSON or writing
+/// the result to the writer failed, it returns an error.
+///
+/// ```rust
+/// use world_map_gen::gen::RandomBoardGen;
+/// use world_map_gen::draw::draw_json;
+/// use std::io::Write;
+///
+/// let mut gen = RandomBoardGen::default();
+/// let board = gen.gen_auto(3, 4);
+///
+/// // Writer to write the serialized JSON result
+/// let mut buffer = Vec::<u8>::new();
+///
+/// draw_json(&mut buffer, &board).unwrap();
+///
+/// println!("JSON: {}", std::str::from_utf8(&buffer).unwrap());
+/// ```
+pub fn draw_json<W: Write>(writer: &mut W, board: &Board) -> Result<()> {
+    serde_json::to_writer(writer, &board)?;
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::board::Board;
+    use crate::land::LandKind;
+
+    #[test]
+    fn draw_1x1_board_as_json() {
+        let b = Board::build(1, 1, |_, _| LandKind::Forest.constant());
+        let mut buf = Vec::<u8>::new();
+        draw_json(&mut buf, &b).unwrap();
+
+        let expect: serde_json::Value = serde_json::from_str(
+            r##"{
+                "width": 1,
+                "height": 1,
+                "cells": [
+                    [
+                        {
+                            "kind": "Forest",
+                            "char": "██",
+                            "color": {
+                                "fg": "#005f00",
+                                "bg": null,
+                                "bold": false,
+                                "underline": false,
+                                "intense": false
+                            },
+                            "altitude": 0
+                        }
+                    ]
+                ],
+                "legends": {
+                    "Forest": "Forest"
+                }
+            }"##,
+        )
+        .unwrap();
+
+        let actual: serde_json::Value =
+            serde_json::from_str(std::str::from_utf8(&buf).unwrap()).unwrap();
+
+        assert_eq!(expect, actual);
+    }
+} // mod tests

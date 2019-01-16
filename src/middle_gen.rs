@@ -3,7 +3,7 @@ extern crate rand;
 use self::rand::seq::SliceRandom;
 use self::rand::Rng;
 use crate::board::{Board, Pos};
-use crate::land;
+use crate::land::LandKind;
 use crate::slope::SlopeGen;
 use std::collections::HashSet;
 
@@ -38,12 +38,12 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
     }
 
     #[inline]
-    fn land_kind(altitude: u8) -> land::LandKind {
+    fn land_kind(altitude: u8) -> LandKind {
         match altitude {
-            0...10 => land::LandKind::Sea,
-            11...40 => land::LandKind::Plain,
-            41...70 => land::LandKind::Forest,
-            71...99 => land::LandKind::Mountain,
+            0...10 => LandKind::Sea,
+            11...40 => LandKind::Plain,
+            41...70 => LandKind::Forest,
+            71...99 => LandKind::Mountain,
             _ => unreachable!(),
         }
     }
@@ -63,7 +63,7 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
         let mut plains = Vec::new();
         for (h, line) in altitudes.iter().enumerate() {
             for (w, alt) in line.iter().enumerate() {
-                if Self::land_kind(*alt) == land::LandKind::Plain {
+                if Self::land_kind(*alt) == LandKind::Plain {
                     plains.push(Pos { x: w, y: h });
                 }
             }
@@ -90,9 +90,9 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
             let alt = altitudes[h][w];
             let p = Pos { x: w, y: h };
             let mut chosen = if tops.contains(&p) {
-                land::TOP.clone()
+                LandKind::Top.constant()
             } else if towns.contains(&p) {
-                land::TOWN.clone()
+                LandKind::Town.constant()
             } else {
                 Self::land_kind(alt).constant()
             };

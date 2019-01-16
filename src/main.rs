@@ -1,6 +1,5 @@
 extern crate clap;
 extern crate rand;
-extern crate serde_json;
 
 use clap::{App, Arg};
 use std::{fmt, io};
@@ -9,7 +8,6 @@ use world_map_gen::{draw, gen};
 enum Error {
     GenFail(world_map_gen::error::Error),
     CliParseFail { name: String, msg: String },
-    NotJsonSerializable(serde_json::Error),
 }
 
 impl fmt::Debug for Error {
@@ -19,7 +17,6 @@ impl fmt::Debug for Error {
             Error::CliParseFail { name, msg } => {
                 write!(f, "Cannot parse CLI option '{}': {}", name, msg)
             }
-            Error::NotJsonSerializable(err) => write!(f, "Cannot serialize as JSON: {}", err),
         }
     }
 }
@@ -27,12 +24,6 @@ impl fmt::Debug for Error {
 impl From<world_map_gen::error::Error> for Error {
     fn from(err: world_map_gen::error::Error) -> Error {
         Error::GenFail(err)
-    }
-}
-
-impl From<serde_json::Error> for Error {
-    fn from(err: serde_json::Error) -> Error {
-        Error::NotJsonSerializable(err)
     }
 }
 
@@ -118,7 +109,7 @@ fn main() -> Result<(), Error> {
     };
 
     if matches.is_present("json") {
-        serde_json::to_writer(io::stdout(), &board)?;
+        draw::draw_json(&mut io::stdout(), &board)?;
     } else {
         draw::draw_term(&board, matches.is_present("altitude"))?;
     }
