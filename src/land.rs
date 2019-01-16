@@ -1,3 +1,31 @@
+//! This module provides representation of cells in a board. And also provides constants for default cells.
+//!
+//! ```rust
+//! extern crate termcolor;
+//!
+//! use world_map_gen::land::{Land, LandKind};
+//!
+//! // You can get default cell
+//! let cell = Land::default();
+//!
+//!// Also your original cell can be defined
+//! let cell = Land {
+//!     kind: LandKind::Town,
+//!     char: "[]",
+//!     color: {
+//!         let mut c = termcolor::ColorSpec::new();
+//!         c.set_fg(Some(termcolor::Color::Black));
+//!         c
+//!     },
+//!     altitude: 0,
+//! };
+//!
+//! // Or you can use preset cells
+//! let cell = LandKind::Sea.constant();
+//! let cell = LandKind::Forest.constant();
+//! let cell = LandKind::Mountain.constant();
+//! ```
+
 extern crate serde;
 extern crate serde_json;
 extern crate termcolor;
@@ -5,11 +33,16 @@ extern crate termcolor;
 use crate::color;
 use termcolor::{Color, ColorSpec};
 
+/// Represents one cell in a board
 #[derive(Debug, Clone, PartialEq)]
 pub struct Land<'a> {
+    /// Kind of the cell like sea, plain, mountain, forest, ...
     pub kind: LandKind,
+    /// Character to represent the cell. It is mainly used for rendering the board to terminal
     pub char: &'a str,
+    /// Color of the cell
     pub color: ColorSpec,
+    /// Altitude of the cell. It is 0 by default, and will be set on generating a map.
     pub altitude: u8,
 }
 
@@ -38,6 +71,9 @@ impl Default for Land<'static> {
 
 macro_rules! define_lands {
     ($($name:ident = ($kind:ident, $color:expr, $legend:expr);)+) => {
+        /// Represents the kind of cell. `constant()` method returns a preset cell constants for
+        /// the kind.
+        #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
         #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize)]
         pub enum LandKind {
             $($kind,)+

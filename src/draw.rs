@@ -1,3 +1,7 @@
+//! Helper to draw a generated map to terminal screen or as JSON.
+//!
+//! Terminal must support 256colors. And large map may require much time and CPU usage to render map.
+
 extern crate termcolor;
 
 use self::termcolor::{BufferedStandardStream, ColorChoice, ColorSpec, WriteColor};
@@ -6,6 +10,20 @@ use crate::error::Result;
 use std::collections::HashMap;
 use std::io::Write;
 
+/// Render the given board to terminal screen. When the `show_altitude` flag is set to true, it
+/// renders the altitude value for each cell instead of each cell's characters. This flag is
+/// usually enabled for debugging purpose.
+/// When writing to terminal fails, it returns an error.
+///
+/// ```rust
+/// use world_map_gen::gen::RandomBoardGen;
+/// use world_map_gen::draw::draw_term;
+///
+/// let mut gen = RandomBoardGen::default();
+/// let board = gen.gen_auto(3, 4);
+///
+/// draw_term(&board, true).unwrap();
+/// ```
 pub fn draw_term(board: &Board, show_altitude: bool) -> Result<()> {
     let stdout = &mut BufferedStandardStream::stdout(ColorChoice::Always);
     let mut prev = ColorSpec::default();

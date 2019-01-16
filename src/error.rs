@@ -1,6 +1,9 @@
+//! Provides error type to represent all kinds of errors which may occur while world map generations.
+
 use std::fmt;
 use std::io;
 
+/// Error type which represents all kinds of errors for world_map_gen crate.
 #[derive(Debug)]
 pub enum Error {
     IoError(io::Error),

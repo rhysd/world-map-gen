@@ -1,3 +1,21 @@
+//! This module provides a board struct representing world map.
+//!
+//! Coordinates which are used in this library is,
+//! - Origin is at left top corner as (0, 0)
+//! - Right direction represents X and width, left direction represents Y and height
+//!
+//! ```text,ignore
+//!  O--------------> x
+//! h|
+//! e|
+//! i|
+//! g|
+//! h|
+//! t|
+//!  V
+//!  y
+//! ```
+
 extern crate serde;
 extern crate serde_json;
 
@@ -5,17 +23,6 @@ use crate::land::Land;
 use std::collections::HashMap;
 use std::ops::{Index, IndexMut};
 use std::slice;
-
-//       width
-//  O--------------> x
-// h|
-// e|
-// i|
-// g|
-// h|
-// t|
-//  V
-//  y
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Pos {
@@ -33,6 +40,8 @@ impl Pos {
     }
 }
 
+/// A struct to represent a one world map. It is generally created by `gen` module's random map
+/// generator. This struct is JSON serializable with `serde_json`.
 #[derive(Debug, PartialEq)]
 pub struct Board<'a> {
     pub width: usize,
@@ -41,6 +50,9 @@ pub struct Board<'a> {
 }
 
 impl<'a> Board<'a> {
+    /// Builds a board with given `width * height` cells. The `builder` generates a cell at the
+    /// given position (x, y) by returning `land::Land` instance.
+    /// Note that you can use `land::LandKind::constant()` to utilize a preset land instance easily.
     pub fn build<F>(width: usize, height: usize, mut builder: F) -> Board<'a>
     where
         F: FnMut(usize, usize) -> Land<'a>,
@@ -58,11 +70,13 @@ impl<'a> Board<'a> {
         }
     }
 
+    /// Returns number of cells per row
     #[inline]
     pub fn width(&self) -> usize {
         self.width
     }
 
+    /// Returns number of rows
     #[inline]
     pub fn height(&self) -> usize {
         self.height
@@ -73,32 +87,39 @@ impl<'a> Board<'a> {
         y * self.width + x
     }
 
+    /// Returns a reference to cell at given (x, y) position
     #[inline]
     pub fn at(&self, x: usize, y: usize) -> &Land {
         &self.cells[self.index_at(x, y)]
     }
 
+    /// Returns a mutable reference to cell at given (x, y) position
     #[inline]
     pub fn at_mut(&mut self, x: usize, y: usize) -> &'a mut Land {
         let idx = self.index_at(x, y);
         &mut self.cells[idx]
     }
 
+    /// Returns an iterator which iterates all cells from left-top corner to right-bottom corner
     #[inline]
     pub fn iter<'b>(&'b self) -> slice::Iter<'b, Land<'a>> {
         self.cells.iter()
     }
 
+    /// Returns a mutable reference iterator which iterates all cells from left-top corner to right
+    /// bottom corner
     #[inline]
     pub fn iter_mut<'b>(&'b mut self) -> slice::IterMut<'b, Land<'a>> {
         self.cells.iter_mut()
     }
 
+    /// Returns an iterator which iterates each row as slice from top to bottom
     #[inline]
     pub fn rows<'b>(&'b self) -> slice::Chunks<'b, Land<'a>> {
         self.cells.chunks(self.width)
     }
 
+    /// Returns a mutable reference iterator which iterates each row as slice from top to bottom
     #[inline]
     pub fn rows_mut<'b>(&'b mut self) -> slice::ChunksMut<'b, Land<'a>> {
         self.cells.chunks_mut(self.width)
@@ -108,6 +129,7 @@ impl<'a> Board<'a> {
 impl<'a> Index<Pos> for Board<'a> {
     type Output = Land<'a>;
 
+    /// Returns a reference to cell at given position
     #[inline]
     fn index(&self, p: Pos) -> &Land<'a> {
         &self.cells[self.index_at(p.x, p.y)]
@@ -115,6 +137,7 @@ impl<'a> Index<Pos> for Board<'a> {
 }
 
 impl<'a> IndexMut<Pos> for Board<'a> {
+    /// Returns a mutable reference to cell at given position
     #[inline]
     fn index_mut(&mut self, p: Pos) -> &mut Land<'a> {
         let idx = self.index_at(p.x, p.y);
@@ -123,6 +146,8 @@ impl<'a> IndexMut<Pos> for Board<'a> {
 }
 
 impl<'a> serde::Serialize for Board<'a> {
+    /// Serialize board in a map which contain width, height, cells as array, and legends for each
+    /// land kind as map. By `serde_json`, the struct can be serialized to JSON object.
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         use serde::ser::SerializeMap;
 
