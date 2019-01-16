@@ -89,15 +89,13 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
         Board::build(self.width, self.height, |w, h| {
             let alt = altitudes[h][w];
             let p = Pos { x: w, y: h };
-            let mut chosen = if tops.contains(&p) {
-                LandKind::Top.constant()
+            if tops.contains(&p) {
+                LandKind::Top.preset(alt)
             } else if towns.contains(&p) {
-                LandKind::Town.constant()
+                LandKind::Town.preset(alt)
             } else {
-                Self::land_kind(alt).constant()
-            };
-            chosen.altitude = alt;
-            chosen
+                Self::land_kind(alt).preset(alt)
+            }
         })
     }
 }

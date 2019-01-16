@@ -348,17 +348,15 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
         Board::build(self.width, self.height, |w, h| {
             let alt = altitudes[h][w];
             let p = Pos { x: w, y: h };
-            let mut land = if tops.contains(&p) {
-                LandKind::Top.constant()
+            if tops.contains(&p) {
+                LandKind::Top.preset(alt)
             } else if towns.contains(&p) {
-                LandKind::Town.constant()
+                LandKind::Town.preset(alt)
             } else if paths.contains(&p) {
-                LandKind::Path.constant()
+                LandKind::Path.preset(alt)
             } else {
-                Self::land_kind(alt).constant()
-            };
-            land.altitude = alt;
-            land
+                Self::land_kind(alt).preset(alt)
+            }
         })
     }
 }

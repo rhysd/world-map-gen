@@ -52,7 +52,7 @@ pub struct Board<'a> {
 impl<'a> Board<'a> {
     /// Builds a board with given `width * height` cells. The `builder` generates a cell at the
     /// given position (x, y) by returning `land::Land` instance.
-    /// Note that you can use `land::LandKind::constant()` to utilize a preset land instance easily.
+    /// Note that you can use `land::LandKind::preset()` to utilize a preset land instance easily.
     pub fn build<F>(width: usize, height: usize, mut builder: F) -> Board<'a>
     where
         F: FnMut(usize, usize) -> Land<'a>,

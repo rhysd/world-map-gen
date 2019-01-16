@@ -135,15 +135,13 @@ impl<R: Rng> RandomBoardGen<R> {
     pub fn gen_small(&mut self, width: usize, height: usize) -> Board<'static> {
         Board::build(width, height, |_, _| {
             let alt = self.rng.gen_range(0, 100);
-            let mut chosen = match alt {
-                0...15 => LandKind::Sea.constant(),
-                16...55 => LandKind::Plain.constant(),
-                56...85 => LandKind::Forest.constant(),
-                86...99 => LandKind::Mountain.constant(),
+            match alt {
+                0...15 => LandKind::Sea.preset(alt),
+                16...55 => LandKind::Plain.preset(alt),
+                56...85 => LandKind::Forest.preset(alt),
+                86...99 => LandKind::Mountain.preset(alt),
                 _ => unreachable!(),
-            };
-            chosen.altitude = alt;
-            chosen
+            }
         })
     }
 

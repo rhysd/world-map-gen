@@ -20,10 +20,10 @@
 //!     altitude: 0,
 //! };
 //!
-//! // Or you can use preset cells
-//! let cell = LandKind::Sea.constant();
-//! let cell = LandKind::Forest.constant();
-//! let cell = LandKind::Mountain.constant();
+//! // Or you can use preset cells with specifying their altitudes
+//! let cell = LandKind::Sea.preset(3);
+//! let cell = LandKind::Forest.preset(50);
+//! let cell = LandKind::Mountain.preset(80);
 //! ```
 
 extern crate serde;
@@ -71,7 +71,7 @@ impl Default for Land<'static> {
 
 macro_rules! define_lands {
     ($($name:ident = ($kind:ident, $color:expr, $legend:expr);)+) => {
-        /// Represents the kind of cell. `constant()` method returns a preset cell constants for
+        /// Represents the kind of cell. `preset()` method returns a preset cell constants for
         /// the kind.
         #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
         #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize)]
@@ -80,15 +80,17 @@ macro_rules! define_lands {
         }
 
         impl LandKind {
+            /// Creates a preset constant with given altitude.
             #[inline]
-            pub fn constant(self) -> Land<'static> {
+            pub fn preset(self, altitude: u8) -> Land<'static> {
                 match self {
                     $(
-                        LandKind::$kind => $name.clone(),
+                        LandKind::$kind => { let mut l = $name.clone(); l.altitude = altitude; l },
                     )+
                 }
             }
 
+            /// Returns a legend string for the land kind.
             #[inline]
             pub fn legend(self) -> &'static str {
                 match self {
@@ -147,7 +149,7 @@ mod tests {
             LandKind::DeepSea,
             LandKind::Path,
         ] {
-            let land = kind.constant();
+            let land = kind.preset(0);
             assert_eq!(&land.kind, kind);
             match land.color.fg() {
                 Some(Color::Ansi256(c)) => assert!(saw.insert(*c), "{}", *c),

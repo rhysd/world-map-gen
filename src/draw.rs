@@ -98,7 +98,7 @@ mod tests {
 
     #[test]
     fn draw_1x1_board_as_json() {
-        let b = Board::build(1, 1, |_, _| LandKind::Forest.constant());
+        let b = Board::build(1, 1, |_, _| LandKind::Forest.preset(50));
         let mut buf = Vec::<u8>::new();
         draw_json(&mut buf, &b).unwrap();
 
@@ -118,7 +118,7 @@ mod tests {
                                 "underline": false,
                                 "intense": false
                             },
-                            "altitude": 0
+                            "altitude": 50
                         }
                     ]
                 ],
