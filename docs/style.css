@@ -1,0 +1,34 @@
+html, body {
+  height: 100%;
+  width: 100%;
+}
+body {
+  color: #ccc;
+  background-color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.main-content {
+  width: 100%;
+}
+.header {
+  margin-bottom: 1rem;
+}
+.title, .label {
+  color: #ccc;
+}
+.footer {
+  background-color: #333;
+}
+strong {
+  color: #fff;
+}
+pre {
+  color: #666;
+  background-color: #333;
+}
+.screen {
+  width: 100%;
+  height: 100%;
+}

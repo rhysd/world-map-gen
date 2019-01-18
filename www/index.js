@@ -1,8 +1,10 @@
-import { gen_board } from 'world-map-gen';
+import { Generator } from 'world-map-gen';
 import Renderer2D from './2d';
 
 const app = new class {
     constructor() {
+        this.generator = Generator.new();
+
         const selector = document.getElementById('dimension-selector');
         this.dimSelIdx = selector.selectedIndex;
         selector.addEventListener('change', this.onVisualizationChange.bind(this));
@@ -68,11 +70,9 @@ const app = new class {
 
     render() {
         const [width, height] = this.getSize();
-        const board = gen_board(width, height);
+        const board = this.generator.gen(width, height);
         this.renderer.render(board);
     }
 }();
 
 app.render();
-
-// window.board = gen_board(200, 200);
