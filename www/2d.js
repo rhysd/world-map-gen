@@ -1,10 +1,5 @@
 class Renderer2D {
     constructor(root) {
-        const prev = root.firstChild;
-        if (prev !== null) {
-            root.removeChild(prev);
-        }
-
         this.canvas = document.createElement('canvas');
         this.canvas.className = 'screen';
         root.appendChild(this.canvas);

@@ -15,8 +15,8 @@ const app = new class {
 
         this.initRenderer('2d');
 
-        const paintButton = document.getElementById('paint-button');
-        paintButton.addEventListener('click', () => {
+        this.paintButton = document.getElementById('paint-button');
+        this.paintButton.addEventListener('click', () => {
             this.render();
         });
     }
@@ -46,6 +46,11 @@ const app = new class {
     }
 
     initRenderer(dim) {
+        const prev = this.screenRoot.firstChild;
+        if (prev !== null) {
+            this.screenRoot.removeChild(prev);
+        }
+
         switch (dim) {
             case '2d':
                 this.renderer = new Renderer2D(this.screenRoot);
@@ -69,9 +74,16 @@ const app = new class {
     }
 
     render() {
+        // TODO: Loading indicator cannot be displayed since map generation is run in main thread.
+        // When map size is very large and it consumes time, CPU core is also consumed for main thread.
+        // In the case, no animation is actually rendered.
+        // To prevent this, map generation must be run in another thread and Rust can do it.
+
+        // this.paintButton.classList.add('is-loading');
         const [width, height] = this.getSize();
         const board = this.generator.gen(width, height);
         this.renderer.render(board);
+        // this.paintButton.classList.remove('is-loading');
     }
 }();
 
