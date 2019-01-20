@@ -32,7 +32,7 @@
 //!         console.log('  Altitude:', cell.altitude);
 //!
 //!         // Get color code of the cell as #rrggbb format
-//!         console.log('  Color:', board.land_color(cell.kind));
+//!         console.log('  Color:', board.land_color_code(cell.kind));
 //!
 //!         // Get land legend
 //!         console.log(' Legend:', board.land_legend(cell.kind));
@@ -77,12 +77,21 @@ impl Board {
         self.cells[idx]
     }
 
-    /// Returns color of land as `#rrggbb` format string from land kind.
-    pub fn land_color(&self, kind: LandKind) -> String {
+    /// Returns color code of land as `#rrggbb` format string from land kind.
+    pub fn land_color_code(&self, kind: LandKind) -> String {
         match self.colors.get(&kind) {
             Some((r, g, b)) => format!("#{:02x}{:02x}{:02x}", r, g, b),
             None => "".to_string(),
         }
+    }
+
+    /// Returns RGB color as u32. 0~8 bits for B, 9~16 bits for G, 17~24 bits for R.
+    /// When no color is set, returns `None`. It means `undefined` in JavaScript side.
+    pub fn land_rgb_color(&self, kind: LandKind) -> Option<u32> {
+        self.colors
+            .get(&kind)
+            .cloned()
+            .map(|(r, g, b)| ((r as u32) << 16) + ((g as u32) << 8) + (b as u32))
     }
 
     /// Returns legend of land as string from land kind.

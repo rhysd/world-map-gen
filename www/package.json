@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "bulma": "~0.7.2",
+    "obelisk.js": "^1.2.2",
     "world-map-gen": "file:../pkg"
   }
 }

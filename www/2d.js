@@ -1,4 +1,4 @@
-class Renderer2D {
+export default class Renderer2D {
     constructor(root) {
         this.canvas = document.createElement('canvas');
         this.canvas.className = 'screen';
@@ -30,7 +30,7 @@ class Renderer2D {
                 const kind = cell.kind;
                 let color = colors.get(kind);
                 if (color === undefined) {
-                    color = board.land_color(kind);
+                    color = board.land_color_code(kind);
                     colors.set(kind, color);
                 }
                 this.ctx.fillStyle = color;
@@ -41,5 +41,3 @@ class Renderer2D {
         this.ctx.stroke();
     }
 }
-
-export default Renderer2D;

@@ -1,19 +1,20 @@
 import { Generator } from 'world-map-gen';
 import Renderer2D from './2d';
+import Renderer3D from './3d';
 
 const app = new class {
     constructor() {
         this.generator = Generator.new();
 
         const selector = document.getElementById('dimension-selector');
-        this.dimSelIdx = selector.selectedIndex;
+        this.dim = selector[selector.selectedIndex].value;
         selector.addEventListener('change', this.onVisualizationChange.bind(this));
 
         this.widthInput = document.getElementById('width-input');
         this.heightInput = document.getElementById('height-input');
         this.screenRoot = document.getElementById('screen-root');
 
-        this.initRenderer('2d');
+        this.initRenderer();
 
         this.paintButton = document.getElementById('paint-button');
         this.paintButton.addEventListener('click', () => {
@@ -26,6 +27,11 @@ const app = new class {
         const height = parseInt(this.heightInput.value, 10);
         if (!isNaN(width) && !isNaN(height)) {
             return [width, height];
+        }
+
+        // TODO: Temporary
+        if (this.dim === '3d') {
+            return [120, 120];
         }
 
         const rect = this.screenRoot.getBoundingClientRect();
@@ -45,31 +51,31 @@ const app = new class {
         }
     }
 
-    initRenderer(dim) {
+    initRenderer() {
         const prev = this.screenRoot.firstChild;
         if (prev !== null) {
             this.screenRoot.removeChild(prev);
         }
 
-        switch (dim) {
+        switch (this.dim) {
             case '2d':
                 this.renderer = new Renderer2D(this.screenRoot);
                 break;
             case '3d':
-                throw new Error('3D renderer is not yet implemented');
+                this.renderer = new Renderer3D(this.screenRoot);
+                break;
             default:
                 throw new Error(`Unknown context ${dim}`);
         }
     }
 
     onVisualizationChange(event) {
-        const idx = event.target.selectedIndex;
-        if (this.dimSelIdx === idx) {
+        const dim = event.target[event.target.selectedIndex].value;
+        if (this.dim === dim) {
             return;
         }
-        this.dimSelIdx = idx;
-        const dim = event.target[idx].value;
-        this.initRenderer(dim);
+        this.dim = dim;
+        this.initRenderer();
         this.render();
     }
 
