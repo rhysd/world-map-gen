@@ -1,4 +1,4 @@
-import { Generator } from 'world-map-gen';
+import { Generator, Resolution } from 'world-map-gen';
 import Renderer2D from './2d';
 import Renderer3D from './3d';
 
@@ -29,7 +29,6 @@ const app = new class {
             return [width, height];
         }
 
-        // TODO: Temporary
         if (this.dim === '3d') {
             return [120, 120];
         }
@@ -86,10 +85,15 @@ const app = new class {
         // To prevent this, map generation must be run in another thread and Rust can do it.
 
         // this.paintButton.classList.add('is-loading');
-        const [width, height] = this.getSize();
-        const board = this.generator.gen(width, height);
-        this.renderer.render(board);
-        // this.paintButton.classList.remove('is-loading');
+        this.paintButton.textContent = 'Painting...';
+        // Wait next tick to change text
+        window.setTimeout(() => {
+            const [width, height] = this.getSize();
+            const board = this.generator.gen_auto(width, height);
+            this.renderer.render(board);
+            // this.paintButton.classList.remove('is-loading');
+            this.paintButton.textContent = 'Paint';
+        }, 0);
     }
 }();
 

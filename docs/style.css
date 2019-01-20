@@ -20,6 +20,8 @@ body {
 }
 .footer {
   background-color: #333;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 strong {
   color: #fff;

@@ -46,7 +46,7 @@ extern crate wasm_bindgen;
 
 use self::rand::rngs;
 use crate::board;
-use crate::gen::RandomBoardGen;
+use crate::gen::{RandomBoardGen, Resolution};
 use crate::land::LandKind;
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
@@ -142,8 +142,19 @@ impl Generator {
     }
 
     /// Generates random map board with given width and height. Parameters are in number of cells.
-    pub fn gen(&mut self, width: usize, height: usize) -> Board {
+    pub fn gen_auto(&mut self, width: usize, height: usize) -> Board {
         let board = self.inner.gen_auto(width, height);
+        Board::from_board(board)
+    }
+
+    /// Generates random map board with given resolution, width and height. Width and height are
+    /// in number of cells.
+    pub fn gen(&mut self, res: Resolution, width: usize, height: usize) -> Board {
+        let board = match res {
+            Resolution::Low => self.inner.gen_small(width, height),
+            Resolution::Middle => self.inner.gen_middle(width, height),
+            Resolution::High => self.inner.gen_large(width, height),
+        };
         Board::from_board(board)
     }
 }

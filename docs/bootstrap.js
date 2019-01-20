@@ -58,35 +58,35 @@
 /******/ 					"__wbindgen_object_drop_ref": function(p0i32) {
 /******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbindgen_object_drop_ref"](p0i32);
 /******/ 					},
-/******/ 					"__wbg_new_bc890df3e5e6a91d": function(p0i32,p1i32) {
-/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_new_bc890df3e5e6a91d"](p0i32,p1i32);
+/******/ 					"__wbg_getRandomValues_53fb3b55de90ba82": function(p0i32,p1i32,p2i32) {
+/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_getRandomValues_53fb3b55de90ba82"](p0i32,p1i32,p2i32);
 /******/ 					},
-/******/ 					"__wbg_call_e15b6aa0c6d3c93f": function(p0i32,p1i32) {
-/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_call_e15b6aa0c6d3c93f"](p0i32,p1i32);
+/******/ 					"__wbg_randomFillSync_7f42030e46736aa4": function(p0i32,p1i32,p2i32) {
+/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_randomFillSync_7f42030e46736aa4"](p0i32,p1i32,p2i32);
+/******/ 					},
+/******/ 					"__wbg_new_ea9a073001008372": function(p0i32,p1i32) {
+/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_new_ea9a073001008372"](p0i32,p1i32);
+/******/ 					},
+/******/ 					"__wbg_call_06d69cdad5158109": function(p0i32,p1i32) {
+/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_call_06d69cdad5158109"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__wbindgen_jsval_eq": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbindgen_jsval_eq"](p0i32,p1i32);
 /******/ 					},
-/******/ 					"__wbg_self_95ad3f1cddd5accc": function(p0i32) {
-/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_self_95ad3f1cddd5accc"](p0i32);
+/******/ 					"__wbg_self_df81c815887b068f": function(p0i32) {
+/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_self_df81c815887b068f"](p0i32);
 /******/ 					},
-/******/ 					"__wbg_require_36a895f0a4ea0529": function(p0i32,p1i32) {
-/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_require_36a895f0a4ea0529"](p0i32,p1i32);
+/******/ 					"__wbg_require_fcfcbdfe9a7aebbb": function(p0i32,p1i32) {
+/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_require_fcfcbdfe9a7aebbb"](p0i32,p1i32);
 /******/ 					},
-/******/ 					"__wbg_crypto_c93cc5a147e35422": function(p0i32) {
-/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_crypto_c93cc5a147e35422"](p0i32);
+/******/ 					"__wbg_crypto_456ee09b7417e045": function(p0i32) {
+/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_crypto_456ee09b7417e045"](p0i32);
 /******/ 					},
 /******/ 					"__wbindgen_is_undefined": function(p0i32) {
 /******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbindgen_is_undefined"](p0i32);
 /******/ 					},
-/******/ 					"__wbg_getRandomValues_58b46416ea7a33a2": function(p0i32) {
-/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_getRandomValues_58b46416ea7a33a2"](p0i32);
-/******/ 					},
-/******/ 					"__wbg_getRandomValues_a3a3c2dd5494fd39": function(p0i32,p1i32,p2i32) {
-/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_getRandomValues_a3a3c2dd5494fd39"](p0i32,p1i32,p2i32);
-/******/ 					},
-/******/ 					"__wbg_randomFillSync_f9cb7531d9c0b144": function(p0i32,p1i32,p2i32) {
-/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_randomFillSync_f9cb7531d9c0b144"](p0i32,p1i32,p2i32);
+/******/ 					"__wbg_getRandomValues_85590dd005d91b46": function(p0i32) {
+/******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbg_getRandomValues_85590dd005d91b46"](p0i32);
 /******/ 					},
 /******/ 					"__wbindgen_throw": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/world_map_gen.js"].exports["__wbindgen_throw"](p0i32,p1i32);
@@ -179,7 +179,7 @@
 /******/
 /******/ 		// Fetch + compile chunk loading for webassembly
 /******/
-/******/ 		var wasmModules = {"0":["../pkg/world_map_gen_bg.wasm"]}[chunkId] || [];
+/******/ 		var wasmModules = {"1":["../pkg/world_map_gen_bg.wasm"]}[chunkId] || [];
 /******/
 /******/ 		wasmModules.forEach(function(wasmModuleId) {
 /******/ 			var installedWasmModuleData = installedWasmModules[wasmModuleId];
@@ -189,7 +189,7 @@
 /******/ 				promises.push(installedWasmModuleData);
 /******/ 			else {
 /******/ 				var importObject = wasmImportObjects[wasmModuleId]();
-/******/ 				var req = fetch(__webpack_require__.p + "" + {"../pkg/world_map_gen_bg.wasm":"e2f394af38f38eb7f9e3"}[wasmModuleId] + ".module.wasm");
+/******/ 				var req = fetch(__webpack_require__.p + "" + {"../pkg/world_map_gen_bg.wasm":"9bb8828e91295a264777"}[wasmModuleId] + ".module.wasm");
 /******/ 				var promise;
 /******/ 				if(importObject instanceof Promise && typeof WebAssembly.compileStreaming === 'function') {
 /******/ 					promise = Promise.all([WebAssembly.compileStreaming(req), importObject]).then(function(items) {
@@ -290,7 +290,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("// A dependency graph that contains any wasm must all be imported\n// asynchronously. This `bootstrap.js` file does the single async import, so\n// that no one else needs to worry about it again.\n__webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ./index.js */ \"./index.js\"))\n  .catch(e => console.error(\"Error importing `index.js`:\", e));\n\n\n//# sourceURL=webpack:///./bootstrap.js?");
+eval("// A dependency graph that contains any wasm must all be imported\n// asynchronously. This `bootstrap.js` file does the single async import, so\n// that no one else needs to worry about it again.\nPromise.all(/*! import() */[__webpack_require__.e(0), __webpack_require__.e(1)]).then(__webpack_require__.bind(null, /*! ./index.js */ \"./index.js\"))\n  .catch(e => console.error(\"Error importing `index.js`:\", e));\n\n\n//# sourceURL=webpack:///./bootstrap.js?");
 
 /***/ })
 

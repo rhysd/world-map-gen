@@ -40,6 +40,8 @@
 
 extern crate rand;
 extern crate term_size;
+#[cfg(target_arch = "wasm32")]
+extern crate wasm_bindgen;
 
 use self::rand::{rngs, Rng};
 use crate::board::Board;
@@ -47,6 +49,8 @@ use crate::error::{Error, Result};
 use crate::land::LandKind;
 use crate::large_gen::LargeBoardGen;
 use crate::middle_gen::MiddleBoardGen;
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::wasm_bindgen;
 
 #[inline]
 #[allow(clippy::or_fun_call)]
@@ -61,6 +65,8 @@ fn board_size(width: Option<usize>, height: Option<usize>) -> Result<(usize, usi
 }
 
 /// Resolution of the board.
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Resolution {
     /// Low resolution. There are limited kinds of cells in generated board.
     Low,
