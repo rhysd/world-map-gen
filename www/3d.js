@@ -10,17 +10,28 @@ export default class Renderer3D {
         root.appendChild(this.canvas);
     }
 
+    determineCellSize(width, height, dpr) {
+        const fromHeight = (this.canvas.height / dpr / height) * 2;
+        const fromWidth = ((this.canvas.width / dpr / width) * 2) / Math.sqrt(3);
+        let cellSize = Math.floor(fromHeight > fromWidth ? fromWidth : fromHeight);
+        if (cellSize % 2 === 1) {
+            cellSize--;
+        }
+        return cellSize > 6 ? cellSize : 6;
+    }
+
     render(board) {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.canvas.getBoundingClientRect();
         this.canvas.width = rect.width * dpr;
         this.canvas.height = rect.height * dpr;
 
-        const point = new Point(this.canvas.width / 2, 200);
-        const pixelView = new PixelView(this.canvas, point);
-
         const width = board.width;
         const height = board.height;
+        const cellSize = this.determineCellSize(width, height, dpr);
+
+        const point = new Point(this.canvas.width / 2, cellSize + 99);
+        const pixelView = new PixelView(this.canvas, point);
 
         const colors = new Map();
         for (let x = 0; x < width; x++) {
@@ -36,10 +47,10 @@ export default class Renderer3D {
                     color = new CubeColor().getByHorizontalColor(rgb);
                     colors.set(kind, color);
                 }
-                const height = CELL_SIZE + cell.altitude;
-                const dim = new CubeDimension(CELL_SIZE, CELL_SIZE, height);
+                const height = cellSize + cell.altitude;
+                const dim = new CubeDimension(cellSize, cellSize, height);
                 const cube = new Cube(dim, color, false);
-                const pt = new Point3D(x * CELL_SIZE, y * CELL_SIZE, 0);
+                const pt = new Point3D(x * cellSize, y * cellSize, 0);
                 pixelView.renderObject(cube, pt);
             }
         }

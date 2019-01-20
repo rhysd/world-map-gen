@@ -1,10 +1,10 @@
 html, body {
   height: 100%;
   width: 100%;
+  background-color: #333;
 }
 body {
   color: #ccc;
-  background-color: #333;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,4 +33,8 @@ pre {
 .screen {
   width: 100%;
   height: 100%;
+}
+a:hover {
+  color: inherit;
+  text-decoration: underline;
 }
