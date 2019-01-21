@@ -11,8 +11,9 @@ export default class Renderer3D {
     }
 
     determineCellSize(width, height, dpr) {
-        const fromHeight = (this.canvas.height / dpr / height) * 2;
-        const fromWidth = ((this.canvas.width / dpr / width) * 2) / Math.sqrt(3);
+        const both = height + width;
+        const fromHeight = ((this.canvas.height - 100) / dpr / both) * 2;
+        const fromWidth = ((this.canvas.width / dpr / both) * 2) / Math.sqrt(3);
         let cellSize = Math.floor(fromHeight > fromWidth ? fromWidth : fromHeight);
         if (cellSize % 2 === 1) {
             cellSize--;
@@ -49,7 +50,7 @@ export default class Renderer3D {
                 }
                 const height = cellSize + cell.altitude;
                 const dim = new CubeDimension(cellSize, cellSize, height);
-                const cube = new Cube(dim, color, false);
+                const cube = new Cube(dim, color, /*border:*/ false);
                 const pt = new Point3D(x * cellSize, y * cellSize, 0);
                 pixelView.renderObject(cube, pt);
             }
