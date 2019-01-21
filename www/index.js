@@ -89,12 +89,14 @@ const app = new class {
         this.paintButton.classList.add('disabled');
         // Wait next tick to change text
         window.setTimeout(() => {
+            const start = Date.now();
             const [width, height] = this.getSize();
             const board = this.generator.gen_auto(width, height);
             this.renderer.render(board);
             // this.paintButton.classList.remove('is-loading');
             this.paintButton.classList.remove('disabled');
             this.paintButton.textContent = 'Paint';
+            console.log('Consumed:', Date.now() - start);
         }, 0);
     }
 }();

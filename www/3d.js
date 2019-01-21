@@ -1,5 +1,5 @@
 import { Point3D, Point, CubeDimension, CubeColor, Cube, PixelView } from 'obelisk.js';
-import * as obelisk from 'obelisk.js';
+import { LandKind } from 'world-map-gen';
 
 const CELL_SIZE = 10; // TODO: Temporary
 
@@ -34,23 +34,51 @@ export default class Renderer3D {
         const point = new Point(this.canvas.width / 2, cellSize + 99);
         const pixelView = new PixelView(this.canvas, point);
 
+        const cache = new Map();
         const colors = new Map();
+
+        function kindColor(kind) {
+            const cached = colors.get(kind);
+            if (cached !== undefined) {
+                return cached;
+            }
+            let rgb = board.land_rgb_color(kind);
+            if (rgb === undefined) {
+                rgb = 0xffffff;
+            }
+            const color = new CubeColor().getByHorizontalColor(rgb);
+            colors.set(kind, color);
+            return color;
+        }
+
+        function calcCube(kind, alt) {
+            const color = kindColor(kind);
+            const height = cellSize + alt;
+            const dim = new CubeDimension(cellSize, cellSize, height);
+            return new Cube(dim, color, /*border:*/ false);
+        }
+
+        function cubeAt(cell) {
+            const kind = cell.kind;
+            const alt = cell.altitude;
+
+            if (kind === LandKind.Town || kind === LandKind.Path) {
+                return calcCube(kind, alt);
+            }
+
+            const cached = cache.get(alt);
+            if (cached !== undefined) {
+                return cached;
+            }
+
+            const cube = calcCube(kind, alt);
+            cache.set(alt, cube);
+            return cube;
+        }
+
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
-                const cell = board.at(x, y);
-                const kind = cell.kind;
-                let color = colors.get(kind);
-                if (color === undefined) {
-                    let rgb = board.land_rgb_color(kind);
-                    if (rgb === undefined) {
-                        rgb = 0xffffff;
-                    }
-                    color = new CubeColor().getByHorizontalColor(rgb);
-                    colors.set(kind, color);
-                }
-                const height = cellSize + cell.altitude;
-                const dim = new CubeDimension(cellSize, cellSize, height);
-                const cube = new Cube(dim, color, /*border:*/ false);
+                const cube = cubeAt(board.at(x, y));
                 const pt = new Point3D(x * cellSize, y * cellSize, 0);
                 pixelView.renderObject(cube, pt);
             }
