@@ -10,10 +10,10 @@ export default class Renderer3D {
         root.appendChild(this.canvas);
     }
 
-    determineCellSize(width, height, dpr) {
+    determineCellSize(width, height) {
         const both = height + width;
-        const fromHeight = ((this.canvas.height - 100) / dpr / both) * 2;
-        const fromWidth = ((this.canvas.width / dpr / both) * 2) / Math.sqrt(3);
+        const fromHeight = ((this.canvas.height - 200) / both) * 2;
+        const fromWidth = ((this.canvas.width / both) * 2) / Math.sqrt(3);
         let cellSize = Math.floor(fromHeight > fromWidth ? fromWidth : fromHeight);
         if (cellSize % 2 === 1) {
             cellSize--;
@@ -29,7 +29,7 @@ export default class Renderer3D {
 
         const width = board.width;
         const height = board.height;
-        const cellSize = this.determineCellSize(width, height, dpr);
+        const cellSize = this.determineCellSize(width, height);
 
         const point = new Point(this.canvas.width / 2, cellSize + 99);
         const pixelView = new PixelView(this.canvas, point);
@@ -53,7 +53,7 @@ export default class Renderer3D {
 
         function calcCube(kind, alt) {
             const color = kindColor(kind);
-            const height = cellSize + alt;
+            const height = cellSize + alt * 2;
             const dim = new CubeDimension(cellSize, cellSize, height);
             return new Cube(dim, color, /*border:*/ false);
         }
