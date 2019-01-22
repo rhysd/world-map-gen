@@ -4,6 +4,7 @@ const path = require('path');
 module.exports = {
     mode: 'development',
     entry: './bootstrap.ts',
+    devtool: 'inline-source-map',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bootstrap.js',

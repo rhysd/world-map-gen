@@ -30,12 +30,10 @@ wasm-release: clean $(WASMSRCS)
 	wasm-opt -Oz pkg/world_map_gen_bg.wasm -o tmp.wasm
 	mv tmp.wasm pkg/world_map_gen_bg.wasm
 
-webpack-dist: wasm-release www/dist
-
 www/dist: wasm-release
-	cd www && npm run build
+	cd www && npm run release
 
-release-docs: clean-docs webpack-dist $(DOCSSRCS)
+release-docs: clean-docs $(DOCSSRCS)
 
 $(DOCSSRCS): www/dist
 	cp -R www/dist/* docs/
