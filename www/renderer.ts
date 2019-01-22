@@ -1,7 +1,12 @@
 import { Board } from 'world-map-gen';
 
-interface Renderer {
-    render(board: Board): void;
+export interface Legend {
+    text: string;
+    color: string;
 }
-
-export default Renderer;
+export interface Rendered {
+    legends: Map<number, Legend>;
+}
+export interface Renderer {
+    render(board: Board): Rendered;
+}

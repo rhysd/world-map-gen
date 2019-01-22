@@ -1,7 +1,8 @@
 import { Point3D, Point, CubeDimension, CubeColor, Cube, PixelView } from 'obelisk.js';
 import { LandKind, Board, Cell } from 'world-map-gen';
+import { Renderer, Rendered, Legend } from './renderer';
 
-export default class Renderer3D {
+export default class Renderer3D implements Renderer {
     canvas: HTMLCanvasElement;
 
     constructor(root: HTMLElement) {
@@ -21,7 +22,7 @@ export default class Renderer3D {
         return cellSize > 6 ? cellSize : 6;
     }
 
-    render(board: Board) {
+    render(board: Board): Rendered {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.canvas.getBoundingClientRect();
         this.canvas.width = rect.width * dpr;
@@ -34,8 +35,9 @@ export default class Renderer3D {
         const point = new Point(this.canvas.width / 2, cellSize + 99 * 2);
         const pixelView = new PixelView(this.canvas, point);
 
-        const cache = new Map();
-        const colors = new Map();
+        const cache = new Map<number, Cube>(); // Altitude -> Cube
+        const colors = new Map<number, CubeColor>(); // kind -> CubeColor
+        const legends = new Map<number, Legend>(); // kind -> Legend
 
         function kindColor(kind: LandKind): CubeColor {
             const cached = colors.get(kind);
@@ -47,7 +49,12 @@ export default class Renderer3D {
                 rgb = 0xffffff;
             }
             const color = new CubeColor().getByHorizontalColor(rgb);
-            colors.set(kind, color);
+            {
+                // Remember legend of the kind
+                const color = board.land_color_code(kind);
+                const text = board.land_legend(kind);
+                legends.set(kind, { text, color });
+            }
             return color;
         }
 
@@ -83,5 +90,9 @@ export default class Renderer3D {
                 pixelView.renderObject(cube, pt);
             }
         }
+
+        return {
+            legends,
+        };
     }
 }

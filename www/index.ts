@@ -1,7 +1,7 @@
 import { Generator } from 'world-map-gen';
 import Renderer2D from './2d';
 import Renderer3D from './3d';
-import Renderer from './renderer';
+import { Renderer } from './renderer';
 
 const app = new class {
     private generator: Generator;
@@ -10,6 +10,7 @@ const app = new class {
     private heightInput: HTMLInputElement;
     private screenRoot: HTMLElement;
     private paintButton: HTMLButtonElement;
+    private legends: HTMLElement;
     private renderer: Renderer;
 
     constructor() {
@@ -30,6 +31,8 @@ const app = new class {
         this.paintButton.addEventListener('click', () => {
             this.render();
         });
+
+        this.legends = document.getElementById('legends') as HTMLElement;
     }
 
     getSize() {
@@ -104,7 +107,26 @@ const app = new class {
             const start = Date.now();
             const [width, height] = this.getSize();
             const board = this.generator.gen_auto(width, height);
-            this.renderer.render(board);
+            const rendered = this.renderer.render(board);
+
+            this.legends.innerHTML = '';
+            for (const legend of rendered.legends.values()) {
+                const item = document.createElement('div');
+                item.className = 'legend';
+
+                const color = document.createElement('div');
+                color.className = 'legend-color';
+                color.style.backgroundColor = legend.color;
+                item.appendChild(color);
+
+                const name = document.createElement('div');
+                name.className = 'legend-name';
+                name.textContent = legend.text;
+                item.appendChild(name);
+
+                this.legends.appendChild(item);
+            }
+
             // this.paintButton.classList.remove('is-loading');
             this.paintButton.classList.remove('disabled');
             this.paintButton.textContent = 'Paint';

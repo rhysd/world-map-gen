@@ -1,5 +1,5 @@
 import { Board } from 'world-map-gen';
-import Renderer from './renderer';
+import { Renderer, Rendered, Legend } from './renderer';
 
 export default class Renderer2D implements Renderer {
     canvas: HTMLCanvasElement;
@@ -13,7 +13,7 @@ export default class Renderer2D implements Renderer {
         this.ctx = this.canvas.getContext('2d')!;
     }
 
-    render(board: Board) {
+    render(board: Board): Rendered {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.canvas.getBoundingClientRect();
         this.canvas.width = rect.width * dpr;
@@ -29,7 +29,8 @@ export default class Renderer2D implements Renderer {
         const cellWidth = this.canvas.width / width;
         const cellHeight = this.canvas.height / height;
 
-        const colors = new Map();
+        const colors = new Map<number, string>();
+        const legends = new Map<number, Legend>();
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 const cell = board.at(x, y);
@@ -41,9 +42,15 @@ export default class Renderer2D implements Renderer {
                 }
                 this.ctx.fillStyle = color;
                 this.ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
+                if (!legends.has(kind)) {
+                    const text = board.land_legend(kind);
+                    legends.set(kind, { text, color });
+                }
             }
         }
 
         this.ctx.stroke();
+
+        return { legends };
     }
 }
