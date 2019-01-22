@@ -1,22 +1,32 @@
-import { Generator, Resolution } from 'world-map-gen';
+import { Generator } from 'world-map-gen';
 import Renderer2D from './2d';
 import Renderer3D from './3d';
+import Renderer from './renderer';
 
 const app = new class {
+    private generator: Generator;
+    private dim: string;
+    private widthInput: HTMLInputElement;
+    private heightInput: HTMLInputElement;
+    private screenRoot: HTMLElement;
+    private paintButton: HTMLButtonElement;
+    private renderer: Renderer;
+
     constructor() {
         this.generator = Generator.new();
 
-        const selector = document.getElementById('dimension-selector');
-        this.dim = selector[selector.selectedIndex].value;
+        const selector = document.getElementById('dimension-selector') as HTMLSelectElement;
+        const option = selector[selector.selectedIndex] as HTMLOptionElement;
+        this.dim = option.value;
         selector.addEventListener('change', this.onVisualizationChange.bind(this));
 
-        this.widthInput = document.getElementById('width-input');
-        this.heightInput = document.getElementById('height-input');
-        this.screenRoot = document.getElementById('screen-root');
+        this.widthInput = document.getElementById('width-input') as HTMLInputElement;
+        this.heightInput = document.getElementById('height-input') as HTMLInputElement;
+        this.screenRoot = document.getElementById('screen-root') as HTMLElement;
 
         this.initRenderer();
 
-        this.paintButton = document.getElementById('paint-button');
+        this.paintButton = document.getElementById('paint-button') as HTMLButtonElement;
         this.paintButton.addEventListener('click', () => {
             this.render();
         });
@@ -64,12 +74,14 @@ const app = new class {
                 this.renderer = new Renderer3D(this.screenRoot);
                 break;
             default:
-                throw new Error(`Unknown context ${dim}`);
+                throw new Error(`Unknown context ${this.dim}`);
         }
     }
 
-    onVisualizationChange(event) {
-        const dim = event.target[event.target.selectedIndex].value;
+    onVisualizationChange(event: Event) {
+        const selector = event.target as HTMLSelectElement;
+        const option = selector[selector.selectedIndex] as HTMLOptionElement;
+        const dim = option.value;
         if (this.dim === dim) {
             return;
         }

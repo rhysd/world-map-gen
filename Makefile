@@ -53,4 +53,4 @@ clean-docs:
 clean:
 	rm -rf pkg www/dist
 
-.PHONY: debug release wasm wasm-release clean webpack-dist clean-docs all
+.PHONY: debug release wasm wasm-release clean webpack-dist clean-docs watch all

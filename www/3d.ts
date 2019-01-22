@@ -1,16 +1,16 @@
 import { Point3D, Point, CubeDimension, CubeColor, Cube, PixelView } from 'obelisk.js';
-import { LandKind } from 'world-map-gen';
-
-const CELL_SIZE = 10; // TODO: Temporary
+import { LandKind, Board, Cell } from 'world-map-gen';
 
 export default class Renderer3D {
-    constructor(root) {
+    canvas: HTMLCanvasElement;
+
+    constructor(root: HTMLElement) {
         this.canvas = document.createElement('canvas');
         this.canvas.className = 'screen';
         root.appendChild(this.canvas);
     }
 
-    determineCellSize(width, height) {
+    determineCellSize(width: number, height: number) {
         const both = height + width;
         const fromHeight = ((this.canvas.height - 200) / both) * 2;
         const fromWidth = ((this.canvas.width / both) * 2) / Math.sqrt(3);
@@ -21,7 +21,7 @@ export default class Renderer3D {
         return cellSize > 6 ? cellSize : 6;
     }
 
-    render(board) {
+    render(board: Board) {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.canvas.getBoundingClientRect();
         this.canvas.width = rect.width * dpr;
@@ -37,7 +37,7 @@ export default class Renderer3D {
         const cache = new Map();
         const colors = new Map();
 
-        function kindColor(kind) {
+        function kindColor(kind: LandKind): CubeColor {
             const cached = colors.get(kind);
             if (cached !== undefined) {
                 return cached;
@@ -51,14 +51,14 @@ export default class Renderer3D {
             return color;
         }
 
-        function calcCube(kind, alt) {
+        function calcCube(kind: LandKind, alt: number): Cube {
             const color = kindColor(kind);
             const height = cellSize + alt * 2;
             const dim = new CubeDimension(cellSize, cellSize, height);
             return new Cube(dim, color, /*border:*/ false);
         }
 
-        function cubeAt(cell) {
+        function cubeAt(cell: Cell): Cube {
             const kind = cell.kind;
             const alt = cell.altitude;
 

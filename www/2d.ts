@@ -1,13 +1,19 @@
-export default class Renderer2D {
-    constructor(root) {
+import { Board } from 'world-map-gen';
+import Renderer from './renderer';
+
+export default class Renderer2D implements Renderer {
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+
+    constructor(root: HTMLElement) {
         this.canvas = document.createElement('canvas');
         this.canvas.className = 'screen';
         root.appendChild(this.canvas);
 
-        this.ctx = this.canvas.getContext('2d');
+        this.ctx = this.canvas.getContext('2d')!;
     }
 
-    render(board) {
+    render(board: Board) {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.canvas.getBoundingClientRect();
         this.canvas.width = rect.width * dpr;
