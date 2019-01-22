@@ -31,7 +31,7 @@ export default class Renderer3D {
         const height = board.height;
         const cellSize = this.determineCellSize(width, height);
 
-        const point = new Point(this.canvas.width / 2, cellSize + 99);
+        const point = new Point(this.canvas.width / 2, cellSize + 99 * 2);
         const pixelView = new PixelView(this.canvas, point);
 
         const cache = new Map();
