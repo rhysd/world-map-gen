@@ -24,8 +24,8 @@
           <div class="control">
             <div class="select">
               <select id="dimension-selector">
-                <option value="2d">2D</option>
                 <option value="3d">3D</option>
+                <option value="2d">2D</option>
               </select>
             </div>
           </div>
@@ -49,22 +49,18 @@
 
         <div class="field">
           <div class="control">
-            <button id="paint-button" class="button is-link">Paint</button>
+            <button id="paint-button" class="button is-link">Generate</button>
           </div>
         </div>
       </aside>
 
-      <section class="section column rows is-fullheight">
+      <section class="section column rows is-fullheight align-center">
         <div id="screen-root" class="row">
         </div>
         <div id="legends" class="row">
-          <div class="legend">
-            <div class="legend-color">
-            </div>
-            <div class="legend-name">
-              Sea
-            </div>
-          </div>
+        </div>
+        <div class="section columns justify-center">
+          <button id="download-json-button" class="button is-link">Download JSON</button>
         </div>
       </section>
     </main>

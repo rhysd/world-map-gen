@@ -52,6 +52,9 @@ pre {
   height: 1rem;
   background-color: white;
 }
+.justify-center {
+  justify-content: center;
+}
 a:hover {
   color: inherit;
   text-decoration: underline;

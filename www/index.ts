@@ -1,4 +1,5 @@
-import { Generator } from 'world-map-gen';
+import { Generator, Board } from 'world-map-gen';
+import { saveAs } from 'file-saver';
 import Renderer2D from './2d';
 import Renderer3D from './3d';
 import { Renderer } from './renderer';
@@ -6,15 +7,18 @@ import { Renderer } from './renderer';
 const app = new class {
     private generator: Generator;
     private dim: string;
+    private currentBoard: Board | null;
     private widthInput: HTMLInputElement;
     private heightInput: HTMLInputElement;
     private screenRoot: HTMLElement;
     private paintButton: HTMLButtonElement;
     private legends: HTMLElement;
     private renderer: Renderer;
+    private downloadJSONButton: HTMLButtonElement;
 
     constructor() {
         this.generator = Generator.new();
+        this.currentBoard = null;
 
         const selector = document.getElementById('dimension-selector') as HTMLSelectElement;
         const option = selector[selector.selectedIndex] as HTMLOptionElement;
@@ -33,6 +37,9 @@ const app = new class {
         });
 
         this.legends = document.getElementById('legends') as HTMLElement;
+
+        this.downloadJSONButton = document.getElementById('download-json-button') as HTMLButtonElement;
+        this.downloadJSONButton.addEventListener('click', this.onDownloadJSON.bind(this));
     }
 
     getSize() {
@@ -68,6 +75,7 @@ const app = new class {
         if (prev !== null) {
             this.screenRoot.removeChild(prev);
         }
+        this.currentBoard = null;
 
         switch (this.dim) {
             case '2d':
@@ -79,6 +87,14 @@ const app = new class {
             default:
                 throw new Error(`Unknown context ${this.dim}`);
         }
+    }
+
+    onDownloadJSON(_: Event) {
+        if (this.currentBoard === null) {
+            return;
+        }
+        const blob = new Blob([this.currentBoard.as_json()], { type: 'text/plain;charset=utf-8' });
+        saveAs(blob, 'board.json');
     }
 
     onVisualizationChange(event: Event) {
@@ -102,6 +118,7 @@ const app = new class {
         // this.paintButton.classList.add('is-loading');
         this.paintButton.textContent = 'Painting...';
         this.paintButton.classList.add('disabled');
+        this.downloadJSONButton.classList.add('disabled');
         // Wait next tick to change text
         window.setTimeout(() => {
             const start = Date.now();
@@ -126,10 +143,12 @@ const app = new class {
 
                 this.legends.appendChild(item);
             }
+            this.currentBoard = board;
 
             // this.paintButton.classList.remove('is-loading');
             this.paintButton.classList.remove('disabled');
-            this.paintButton.textContent = 'Paint';
+            this.paintButton.textContent = 'Generate';
+            this.downloadJSONButton.classList.remove('disabled');
             console.log('Consumed:', Date.now() - start);
         }, 0);
     }
