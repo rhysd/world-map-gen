@@ -38,6 +38,7 @@ export default class Renderer3D implements Renderer {
         const cache = new Map<number, Cube>(); // Altitude -> Cube
         const colors = new Map<number, CubeColor>(); // kind -> CubeColor
         const legends = new Map<number, Legend>(); // kind -> Legend
+        let topCube: Cube | null = null;
 
         function kindColor(kind: LandKind, cell: Cell): CubeColor {
             const cached = colors.get(kind);
@@ -71,6 +72,13 @@ export default class Renderer3D implements Renderer {
             if (!legends.has(kind)) {
                 // Remember legend of the kind also
                 legends.set(kind, { text: cell.legend(), color: cell.color_code() });
+            }
+
+            if (kind === LandKind.Top) {
+                if (topCube === null) {
+                    topCube = calcCube(kind, alt, cell);
+                }
+                return topCube;
             }
 
             if (kind === LandKind.Town || kind === LandKind.Path) {
