@@ -26,6 +26,7 @@ module.exports = {
             'index.html',
             { from: 'node_modules/bulma/css/bulma.min.css', to: 'node_modules/bulma/css/' },
             'style.css',
+            { from: 'assets', to: 'assets' },
         ]),
     ],
 };

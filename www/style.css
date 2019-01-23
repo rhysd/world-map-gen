@@ -18,6 +18,9 @@ body {
 .title, .label {
   color: #ccc;
 }
+.logo {
+  margin-right: 0.5rem;
+}
 .footer {
   background-color: #333;
   padding-top: 0px;
