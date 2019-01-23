@@ -24,8 +24,8 @@ export default class Renderer2D implements Renderer {
 
         this.ctx.beginPath();
 
-        const width = board.width;
-        const height = board.height;
+        const width = board.width();
+        const height = board.height();
         const cellWidth = this.canvas.width / width;
         const cellHeight = this.canvas.height / height;
 
@@ -37,13 +37,15 @@ export default class Renderer2D implements Renderer {
                 const kind = cell.kind;
                 let color = colors.get(kind);
                 if (color === undefined) {
-                    color = board.land_color_code(kind);
-                    colors.set(kind, color);
+                    color = cell.color_code();
+                    if (color !== undefined) {
+                        colors.set(kind, color);
+                    }
                 }
                 this.ctx.fillStyle = color;
                 this.ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
                 if (!legends.has(kind)) {
-                    const text = board.land_legend(kind);
+                    const text = cell.legend();
                     legends.set(kind, { text, color });
                 }
             }

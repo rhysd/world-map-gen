@@ -116,7 +116,7 @@ const app = new class {
 
                 const color = document.createElement('div');
                 color.className = 'legend-color';
-                color.style.backgroundColor = legend.color;
+                color.style.backgroundColor = legend.color || 'none';
                 item.appendChild(color);
 
                 const name = document.createElement('div');

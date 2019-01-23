@@ -94,6 +94,16 @@ macro_rules! define_lands {
                 }
             }
 
+            /// Creates a reference to preset constant
+            #[inline]
+            pub fn preset_ref(self) -> &'static Land<'static> {
+                match self {
+                    $(
+                        LandKind::$kind => &$name,
+                    )+
+                }
+            }
+
             /// Returns a legend string for the land kind.
             #[inline]
             pub fn legend(self) -> &'static str {

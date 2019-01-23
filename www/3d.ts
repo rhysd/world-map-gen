@@ -28,8 +28,8 @@ export default class Renderer3D implements Renderer {
         this.canvas.width = rect.width * dpr;
         this.canvas.height = rect.height * dpr;
 
-        const width = board.width;
-        const height = board.height;
+        const width = board.width();
+        const height = board.height();
         const cellSize = this.determineCellSize(width, height);
 
         const point = new Point(this.canvas.width / 2, cellSize + 99 * 2);
@@ -39,27 +39,26 @@ export default class Renderer3D implements Renderer {
         const colors = new Map<number, CubeColor>(); // kind -> CubeColor
         const legends = new Map<number, Legend>(); // kind -> Legend
 
-        function kindColor(kind: LandKind): CubeColor {
+        function kindColor(kind: LandKind, cell: Cell): CubeColor {
             const cached = colors.get(kind);
             if (cached !== undefined) {
                 return cached;
             }
-            let rgb = board.land_rgb_color(kind);
+            let rgb = cell.rgb_color();
             if (rgb === undefined) {
                 rgb = 0xffffff;
             }
             const color = new CubeColor().getByHorizontalColor(rgb);
-            {
-                // Remember legend of the kind
-                const color = board.land_color_code(kind);
-                const text = board.land_legend(kind);
-                legends.set(kind, { text, color });
-            }
+            colors.set(kind, color);
+
+            // Remember legend of the kind also
+            legends.set(kind, { text: cell.legend(), color: cell.color_code() });
+
             return color;
         }
 
-        function calcCube(kind: LandKind, alt: number): Cube {
-            const color = kindColor(kind);
+        function calcCube(kind: LandKind, alt: number, cell: Cell): Cube {
+            const color = kindColor(kind, cell);
             const height = cellSize + alt * 2;
             const dim = new CubeDimension(cellSize, cellSize, height);
             return new Cube(dim, color, /*border:*/ false);
@@ -69,8 +68,13 @@ export default class Renderer3D implements Renderer {
             const kind = cell.kind;
             const alt = cell.altitude;
 
+            if (!legends.has(kind)) {
+                // Remember legend of the kind also
+                legends.set(kind, { text: cell.legend(), color: cell.color_code() });
+            }
+
             if (kind === LandKind.Town || kind === LandKind.Path) {
-                return calcCube(kind, alt);
+                return calcCube(kind, alt, cell);
             }
 
             const cached = cache.get(alt);
@@ -78,7 +82,7 @@ export default class Renderer3D implements Renderer {
                 return cached;
             }
 
-            const cube = calcCube(kind, alt);
+            const cube = calcCube(kind, alt, cell);
             cache.set(alt, cube);
             return cube;
         }
