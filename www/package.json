@@ -21,7 +21,6 @@
   "homepage": "https://rhysd.github.io/world-map-gen/",
   "devDependencies": {
     "@types/file-saver": "^2.0.0",
-    "@types/obelisk.js": "^1.1.29",
     "copy-webpack-plugin": "^4.5.2",
     "ts-loader": "^5.3.3",
     "typescript": "^3.2.4",

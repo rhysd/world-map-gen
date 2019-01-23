@@ -15,6 +15,7 @@
     "outDir": "dist"
   },
   "files": [
+    "obelisk.js.d.ts",
     "bootstrap.ts",
     "index.ts",
     "2d.ts",
