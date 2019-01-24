@@ -28,6 +28,7 @@ export default class Renderer2D implements Renderer {
         const height = board.height();
         const cellWidth = this.canvas.width / width;
         const cellHeight = this.canvas.height / height;
+        const cellSize = cellWidth > cellHeight ? cellHeight : cellWidth;
 
         const colors = new Map<number, string>();
         const legends = new Map<number, Legend>();
@@ -43,7 +44,7 @@ export default class Renderer2D implements Renderer {
                     }
                 }
                 this.ctx.fillStyle = color;
-                this.ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
+                this.ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
                 if (!legends.has(kind)) {
                     const text = cell.legend();
                     legends.set(kind, { text, color });
