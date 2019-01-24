@@ -16,7 +16,7 @@
 //!
 //! - `land`: `land::Land` struct represents each cell in a board
 //! - `board`: `board::Board` struct represents one world map. The struct is JSON serializable with `serde_json`
-//! - `draw`: Helper to draw a board to terminal
+//! - `draw`: Helper to draw a board to terminal or as JSON
 //! - `gen`: A random world map generator to build `board::Board` struct. It provides algorithms for 3 kinds of resolutions
 //! - `error`: Error type which may be returned from a map generator
 //!

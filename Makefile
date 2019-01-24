@@ -29,6 +29,8 @@ $(WASMSRCS): $(SRCS)
 wasm-release: clean $(WASMSRCS)
 	wasm-opt -Oz pkg/world_map_gen_bg.wasm -o tmp.wasm
 	mv tmp.wasm pkg/world_map_gen_bg.wasm
+	cp README.md pkg/
+	cp LICENSE.txt pkg/
 
 www/dist: wasm-release
 	cd www && npm run release

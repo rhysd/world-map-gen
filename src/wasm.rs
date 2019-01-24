@@ -12,7 +12,7 @@
 //! Wasm package can be installed as npm package: https://www.npmjs.com/package/world-map-gen
 //!
 //! ```javascript
-//! import { Generator } from 'world-map-gen';
+//! import { Generator, LandKind } from 'world-map-gen';
 //!
 //! // Generate a new random map generator
 //! const gen = Generator.new();
@@ -36,6 +36,9 @@
 //!
 //!         // Get land legend
 //!         console.log(' Legend:', cell.legend());
+//!
+//!         // Check the cell is town
+//!         console.log('  town?:', cell.kind === LandKind.Town);
 //!     }
 //! }
 //!
