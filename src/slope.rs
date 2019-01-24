@@ -15,6 +15,14 @@ pub struct SlopeGen<'a, R: Rng + 'a> {
     num_tops: usize,
 }
 
+#[repr(u8)]
+enum Dir {
+    Above,
+    Below,
+    Left,
+    Right,
+}
+
 impl<'a, R: Rng> SlopeGen<'a, R> {
     pub fn new<'b: 'a>(
         rng: &'b mut R,
@@ -47,41 +55,62 @@ impl<'a, R: Rng> SlopeGen<'a, R> {
     }
 
     // Down a slope
-    fn down(&mut self, altitude: u8, x: usize, y: usize) {
-        let delta = self.rng.gen_range(0, self.down_rate);
+    fn down(&mut self, altitude: u8, x: usize, y: usize, down_rates: [u8; 4], dir: Dir) {
+        let delta = self.rng.gen_range(0, down_rates[dir as usize]);
         let altitude = altitude.saturating_sub(delta);
         if self.altitudes[y][x] >= altitude {
             // Skip when the altitude is already calculated as other mountain's slope
             return;
         }
-        self.slope(altitude, x, y);
+        self.slope(altitude, x, y, down_rates);
     }
 
     // Create a slope of mountain
-    fn slope(&mut self, altitude: u8, x: usize, y: usize) {
+    fn slope(&mut self, altitude: u8, x: usize, y: usize, down_rates: [u8; 4]) {
         self.altitudes[y][x] = altitude;
         if altitude == 0 {
             return;
         }
         if x > 0 {
-            self.down(altitude, x - 1, y);
+            self.down(altitude, x - 1, y, down_rates, Dir::Left);
         }
         if self.width - 1 > x {
-            self.down(altitude, x + 1, y);
+            self.down(altitude, x + 1, y, down_rates, Dir::Right);
         }
         if y > 0 {
-            self.down(altitude, x, y - 1);
+            self.down(altitude, x, y - 1, down_rates, Dir::Above);
         }
         if self.height - 1 > y {
-            self.down(altitude, x, y + 1);
+            self.down(altitude, x, y + 1, down_rates, Dir::Below);
         }
+    }
+
+    // Generate down rates with 30% noise per direction
+    fn random_down_rates(&mut self) -> [u8; 4] {
+        let mut rates = [0, 0, 0, 0];
+        let min = (self.down_rate as i32) * 7 / 10;
+        let deg = (self.down_rate as i32) - min;
+        if deg > 0 {
+            let mut budget = deg * 4;
+            for i in 0..3 {
+                let deg_max = cmp::min(budget, deg * 2 + 1);
+                if deg_max > 0 {
+                    let noise = self.rng.gen_range(0, deg_max);
+                    rates[i] = (min as u8) + (noise as u8);
+                    budget -= noise;
+                }
+            }
+            rates[3] = (min as u8) + cmp::max(budget, 0) as u8;
+        }
+        rates
     }
 
     pub fn gen(&mut self) {
         while self.tops.len() < self.num_tops {
             let x = self.rng.gen_range(0, self.width);
             let y = self.rng.gen_range(0, self.height);
-            self.slope(99, x, y);
+            let down_rates = self.random_down_rates();
+            self.slope(99, x, y, down_rates);
             self.tops.insert(Pos { x, y });
         }
     }
@@ -90,10 +119,11 @@ impl<'a, R: Rng> SlopeGen<'a, R> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
-    fn generate_slope() {
+    fn generate_slope_invariant() {
         let mut rng = rand::thread_rng();
-        let mut slope = SlopeGen::new(&mut rng, 3, 4, 1, 2);
+        let mut slope = SlopeGen::new(&mut rng, 3, 4, 5, 2);
         slope.gen();
 
         let alt = slope.altitudes;
@@ -105,26 +135,28 @@ mod tests {
 
         for y in 0..4 {
             for x in 0..3 {
-                let a = alt[y][x];
                 if top.contains(&Pos { x, y }) {
-                    assert_eq!(a, 99);
-                } else {
-                    assert!(90 < a && a <= 99);
+                    // Skip tops
+                    continue;
                 }
-            }
-        }
-
-        for Pos { x, y } in top.into_iter() {
-            for (x, y) in &[
-                (x, y.wrapping_sub(1)),
-                (x, y + 1),
-                (x.wrapping_sub(1), y),
-                (x + 1, y),
-            ] {
-                if *x < 3 && *y < 4 {
-                    let a = alt[*y][*x];
-                    assert!(a == 98 || a == 99);
-                }
+                let a = alt[y][x];
+                let ix = x as isize;
+                let iy = y as isize;
+                let dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)];
+                let b = dirs.iter().any(|(dx, dy)| {
+                    let x = ix + dx;
+                    let y = iy + dy;
+                    if x < 0 || 3 <= x || y < 0 || 4 <= y {
+                        false
+                    } else {
+                        alt[y as usize][x as usize] >= a
+                    }
+                });
+                assert!(
+                    b,
+                    "All cells altitudes around the cell are smaller at ({}, {})",
+                    x, y
+                );
             }
         }
     }
