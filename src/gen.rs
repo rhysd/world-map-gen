@@ -61,7 +61,15 @@ fn board_size(width: Option<usize>, height: Option<usize>) -> Result<(usize, usi
     let (w, h) = term_size::dimensions().ok_or(Error::CannotDetermineTermsize)?;
     // Divide by 2 since assuming that a terminal utilizes monospace font.
     let w = w / 2;
-    Ok((width.unwrap_or(w), height.unwrap_or(std::cmp::min(w, h))))
+    let h = if w < h {
+        // On vertical window, write square map
+        w
+    } else {
+        // Consider the space for legends and next shell prompt
+        // 2 for legends, 1 for a prompt
+        h.saturating_sub(3)
+    };
+    Ok((width.unwrap_or(w), height.unwrap_or(h)))
 }
 
 /// Resolution of the board.
