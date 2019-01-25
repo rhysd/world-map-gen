@@ -58,6 +58,9 @@ pre {
 .justify-center {
   justify-content: center;
 }
+.justify-center > *:not(:first-child) {
+  margin-left: 80px;
+}
 a:hover {
   color: inherit;
   text-decoration: underline;

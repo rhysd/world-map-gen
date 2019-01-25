@@ -5,11 +5,8 @@ export default class Renderer2D implements Renderer {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
 
-    constructor(root: HTMLElement) {
-        this.canvas = document.createElement('canvas');
-        this.canvas.className = 'screen';
-        root.appendChild(this.canvas);
-
+    constructor(canvas: HTMLCanvasElement) {
+        this.canvas = canvas;
         this.ctx = this.canvas.getContext('2d')!;
     }
 

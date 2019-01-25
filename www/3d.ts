@@ -5,10 +5,8 @@ import { Renderer, Rendered, Legend } from './renderer';
 export default class Renderer3D implements Renderer {
     canvas: HTMLCanvasElement;
 
-    constructor(root: HTMLElement) {
-        this.canvas = document.createElement('canvas');
-        this.canvas.className = 'screen';
-        root.appendChild(this.canvas);
+    constructor(canvas: HTMLCanvasElement) {
+        this.canvas = canvas;
     }
 
     determineCellSize(width: number, height: number) {
@@ -16,6 +14,7 @@ export default class Renderer3D implements Renderer {
         const fromHeight = ((this.canvas.height - 200) / both) * 2;
         const fromWidth = ((this.canvas.width / both) * 2) / Math.sqrt(3);
         let cellSize = Math.floor(fromHeight > fromWidth ? fromWidth : fromHeight);
+        console.log({ fromHeight, fromWidth, cellSize });
         if (cellSize % 2 === 1) {
             cellSize--;
         }

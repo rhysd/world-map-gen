@@ -15,10 +15,13 @@ const app = new class {
     private legends: HTMLElement;
     private renderer: Renderer;
     private downloadJSONButton: HTMLButtonElement;
+    private downloadPNGButton: HTMLButtonElement;
+    private screen: HTMLCanvasElement | null;
 
     constructor() {
         this.generator = Generator.new();
         this.currentBoard = null;
+        this.screen = null;
 
         const selector = document.getElementById('dimension-selector') as HTMLSelectElement;
         const option = selector[selector.selectedIndex] as HTMLOptionElement;
@@ -40,6 +43,9 @@ const app = new class {
 
         this.downloadJSONButton = document.getElementById('download-json-button') as HTMLButtonElement;
         this.downloadJSONButton.addEventListener('click', this.onDownloadJSON.bind(this));
+
+        this.downloadPNGButton = document.getElementById('download-png-button') as HTMLButtonElement;
+        this.downloadPNGButton.addEventListener('click', this.onDownloadPNG.bind(this));
     }
 
     getSize() {
@@ -76,13 +82,16 @@ const app = new class {
             this.screenRoot.removeChild(prev);
         }
         this.currentBoard = null;
+        this.screen = document.createElement('canvas');
+        this.screen.className = 'screen';
+        this.screenRoot.appendChild(this.screen);
 
         switch (this.dim) {
             case '2d':
-                this.renderer = new Renderer2D(this.screenRoot);
+                this.renderer = new Renderer2D(this.screen);
                 break;
             case '3d':
-                this.renderer = new Renderer3D(this.screenRoot);
+                this.renderer = new Renderer3D(this.screen);
                 break;
             default:
                 throw new Error(`Unknown context ${this.dim}`);
@@ -95,6 +104,13 @@ const app = new class {
         }
         const blob = new Blob([this.currentBoard.as_json()], { type: 'text/plain;charset=utf-8' });
         saveAs(blob, 'board.json');
+    }
+
+    onDownloadPNG(_: Event) {
+        if (this.screen === null) {
+            return;
+        }
+        this.screen.toBlob((b: Blob) => saveAs(b, 'board.png'));
     }
 
     onVisualizationChange(event: Event) {
@@ -117,8 +133,10 @@ const app = new class {
 
         // this.paintButton.classList.add('is-loading');
         this.paintButton.textContent = 'Painting...';
-        this.paintButton.classList.add('disabled');
-        this.downloadJSONButton.classList.add('disabled');
+        for (const btn of [this.paintButton, this.downloadJSONButton, this.downloadPNGButton]) {
+            btn.classList.add('disabled');
+        }
+
         // Wait next tick to change text
         window.setTimeout(() => {
             const start = Date.now();
@@ -146,9 +164,10 @@ const app = new class {
             this.currentBoard = board;
 
             // this.paintButton.classList.remove('is-loading');
-            this.paintButton.classList.remove('disabled');
+            for (const btn of [this.paintButton, this.downloadJSONButton, this.downloadPNGButton]) {
+                btn.classList.remove('disabled');
+            }
             this.paintButton.textContent = 'Generate';
-            this.downloadJSONButton.classList.remove('disabled');
             console.log('Consumed:', Date.now() - start);
         }, 0);
     }
