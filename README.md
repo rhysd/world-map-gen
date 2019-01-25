@@ -35,11 +35,11 @@ and implemented it (with small improvements).
 
 ## Installation
 
-### Try at project page
+### Try random map generation at project page
 
 [gh-page of this project][proj] is a demo page for showing how this package works. The demo site
 is constructed with TypeScript, WebAssembly (thanks to [wasm-pack][], [wasm-bindgen][]) and webpack.
-The source code of the page is in [`www`](./www) directory.
+The source code of the page is in [`www/`](./www) directory.
 
 ### As Rust library
 
@@ -127,7 +127,8 @@ for (i, row) in board.rows().enumerate() {
 
 ### WebAssembly library
 
-[www/](./www) is a good live example to show how to use this package in WebAssembly. It is hosted at [gh-pages][proj].
+[www/](./www) directory is a good live example to show how to use this package in TypeScript and
+WebAssembly. It is hosted at [gh-pages][proj].
 
 [The npm package][npm] contains `world_map_gen.wasm` and `world_map_gen.js`. The `world_map_gen.js`
 is an entry point. Bundler which support WebAssembly like [webpack](https://github.com/webpack/webpack)
