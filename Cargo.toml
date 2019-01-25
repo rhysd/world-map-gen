@@ -3,6 +3,12 @@ name = "world-map-gen"
 version = "0.1.0"
 authors = ["rhysd <https://rhysd.github.io>"]
 edition = "2018"
+description = "Command line tool and library to generate random game world maps for both Rust and WebAssembly"
+categories = ["command-line-utilities", "rendering", "wasm"]
+repository = "https://github.com/rhysd/world-map-gen"
+readme = "README.md"
+include = ["/src/**/*.rs", "/Cargo.toml", "/LICENSE.txt"]
+license-file = "LICENSE.txt"
 
 [[bin]]
 path = "src/main.rs"
@@ -33,3 +39,9 @@ wee_alloc = { version = "0.4.2", optional = true }
 
 [dev-dependencies]
 cargo-husky = "1.2.1"
+
+[package.metadata.release]
+no-dev-version = true
+
+[badges]
+maintenance = { status = "passively-maintained" }
