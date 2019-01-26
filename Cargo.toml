@@ -45,3 +45,5 @@ no-dev-version = true
 
 [badges]
 maintenance = { status = "passively-maintained" }
+travis-ci = { repository = "rhysd/world-map-gen" }
+appveyor = { repository = "rhysd/world-map-gen" }

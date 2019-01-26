@@ -260,5 +260,3 @@ declare module 'obelisk.js' {
         constructor(dimension?: LineZDimension, color?: LineColor, useDefaultCanvas?: boolean);
     }
 }
-
-あいうえお;

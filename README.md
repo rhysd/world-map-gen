@@ -3,6 +3,8 @@ Random World Map Generator
 [![crates.io][crate-badge]][crate]
 [![npm version][npm-badge]][npm]
 [![documentation][doc-badge]][doc]
+[![CI on Linux and macOS][travis-ci-badge]][travis-ci]
+[![CI on Windows][appveyor-badge]][appveyor]
 
 `world-map-gen` is a CLI tool and library for Rust and WebAssembly.
 It provides functionality to generate a random world map for games like a retro tactical simulation game.
@@ -241,3 +243,7 @@ Distributed under [the MIT License](LICENSE.txt).
 [wasm-pack]: https://github.com/rustwasm/wasm-pack
 [wasm-bindgen]: https://github.com/rustwasm/wasm-bindgen
 [cargo]: https://github.com/rust-lang/cargo
+[appveyor-badge]: https://ci.appveyor.com/api/project/rhysd/world-map-gen/branch/master?svg=true
+[appveyor]: https://ci.appveyor.com/project/rhysd/world-map-gen/branch/master
+[travis-ci-badge]: https://travis-ci.org/rhysd/world-map-gen.svg?branch=master
+[travis-ci]: https://travis-ci.org/rhysd/world-map-gen
