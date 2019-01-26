@@ -48,84 +48,7 @@ const app = new class {
         this.downloadPNGButton.addEventListener('click', this.onDownloadPNG.bind(this));
     }
 
-    getSize() {
-        const width = parseInt(this.widthInput.value, 10);
-        const height = parseInt(this.heightInput.value, 10);
-        if (!isNaN(width) && !isNaN(height)) {
-            return [width, height];
-        }
-
-        if (this.dim === '3d') {
-            return [120, 120];
-        }
-
-        const rect = this.screenRoot.getBoundingClientRect();
-
-        if (!isNaN(width)) {
-            // Note: height is NaN
-            const cellPix = rect.width / width;
-            return [width, Math.floor(rect.height / cellPix)];
-        } else if (!isNaN(height)) {
-            // Note: width is NaN
-            const cellPix = rect.height / height;
-            return [Math.floor(rect.width / cellPix), height];
-        } /* longer side length is 200 cells by default */ else {
-            const max = rect.height > rect.width ? rect.height : rect.width;
-            const cellPix = max / 200;
-            return [Math.floor(rect.width / cellPix), Math.floor(rect.height / cellPix)];
-        }
-    }
-
-    initRenderer() {
-        const prev = this.screenRoot.firstChild;
-        if (prev !== null) {
-            this.screenRoot.removeChild(prev);
-        }
-        this.currentBoard = null;
-        this.screen = document.createElement('canvas');
-        this.screen.className = 'screen';
-        this.screenRoot.appendChild(this.screen);
-
-        switch (this.dim) {
-            case '2d':
-                this.renderer = new Renderer2D(this.screen);
-                break;
-            case '3d':
-                this.renderer = new Renderer3D(this.screen);
-                break;
-            default:
-                throw new Error(`Unknown context ${this.dim}`);
-        }
-    }
-
-    onDownloadJSON(_: Event) {
-        if (this.currentBoard === null) {
-            return;
-        }
-        const blob = new Blob([this.currentBoard.as_json()], { type: 'text/plain;charset=utf-8' });
-        saveAs(blob, 'board.json');
-    }
-
-    onDownloadPNG(_: Event) {
-        if (this.screen === null) {
-            return;
-        }
-        this.screen.toBlob((b: Blob) => saveAs(b, 'board.png'));
-    }
-
-    onVisualizationChange(event: Event) {
-        const selector = event.target as HTMLSelectElement;
-        const option = selector[selector.selectedIndex] as HTMLOptionElement;
-        const dim = option.value;
-        if (this.dim === dim) {
-            return;
-        }
-        this.dim = dim;
-        this.initRenderer();
-        this.render();
-    }
-
-    render() {
+    public render() {
         // TODO: Loading indicator cannot be displayed since map generation is run in main thread.
         // When map size is very large and it consumes time, CPU core is also consumed for main thread.
         // In the case, no animation is actually rendered.
@@ -170,6 +93,83 @@ const app = new class {
             this.paintButton.textContent = 'Generate';
             console.log('Consumed:', Date.now() - start);
         }, 0);
+    }
+
+    private getSize() {
+        const width = parseInt(this.widthInput.value, 10);
+        const height = parseInt(this.heightInput.value, 10);
+        if (!isNaN(width) && !isNaN(height)) {
+            return [width, height];
+        }
+
+        if (this.dim === '3d') {
+            return [120, 120];
+        }
+
+        const rect = this.screenRoot.getBoundingClientRect();
+
+        if (!isNaN(width)) {
+            // Note: height is NaN
+            const cellPix = rect.width / width;
+            return [width, Math.floor(rect.height / cellPix)];
+        } else if (!isNaN(height)) {
+            // Note: width is NaN
+            const cellPix = rect.height / height;
+            return [Math.floor(rect.width / cellPix), height];
+        } /* longer side length is 200 cells by default */ else {
+            const max = rect.height > rect.width ? rect.height : rect.width;
+            const cellPix = max / 200;
+            return [Math.floor(rect.width / cellPix), Math.floor(rect.height / cellPix)];
+        }
+    }
+
+    private initRenderer() {
+        const prev = this.screenRoot.firstChild;
+        if (prev !== null) {
+            this.screenRoot.removeChild(prev);
+        }
+        this.currentBoard = null;
+        this.screen = document.createElement('canvas');
+        this.screen.className = 'screen';
+        this.screenRoot.appendChild(this.screen);
+
+        switch (this.dim) {
+            case '2d':
+                this.renderer = new Renderer2D(this.screen);
+                break;
+            case '3d':
+                this.renderer = new Renderer3D(this.screen);
+                break;
+            default:
+                throw new Error(`Unknown context ${this.dim}`);
+        }
+    }
+
+    private onDownloadJSON(_: Event) {
+        if (this.currentBoard === null) {
+            return;
+        }
+        const blob = new Blob([this.currentBoard.as_json()], { type: 'text/plain;charset=utf-8' });
+        saveAs(blob, 'board.json');
+    }
+
+    private onDownloadPNG(_: Event) {
+        if (this.screen === null) {
+            return;
+        }
+        this.screen.toBlob((b: Blob) => saveAs(b, 'board.png'));
+    }
+
+    private onVisualizationChange(event: Event) {
+        const selector = event.target as HTMLSelectElement;
+        const option = selector[selector.selectedIndex] as HTMLOptionElement;
+        const dim = option.value;
+        if (this.dim === dim) {
+            return;
+        }
+        this.dim = dim;
+        this.initRenderer();
+        this.render();
     }
 }();
 

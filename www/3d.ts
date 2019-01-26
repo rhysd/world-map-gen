@@ -3,24 +3,13 @@ import { LandKind, Board, Cell } from 'world-map-gen';
 import { Renderer, Rendered, Legend } from './renderer';
 
 export default class Renderer3D implements Renderer {
-    canvas: HTMLCanvasElement;
+    private canvas: HTMLCanvasElement;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
     }
 
-    determineCellSize(width: number, height: number) {
-        const both = height + width;
-        const fromHeight = ((this.canvas.height - 200) / both) * 2;
-        const fromWidth = ((this.canvas.width / both) * 2) / Math.sqrt(3);
-        let cellSize = Math.floor(fromHeight > fromWidth ? fromWidth : fromHeight);
-        if (cellSize % 2 === 1) {
-            cellSize--;
-        }
-        return cellSize > 6 ? cellSize : 6;
-    }
-
-    render(board: Board): Rendered {
+    public render(board: Board): Rendered {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.canvas.getBoundingClientRect();
         this.canvas.width = rect.width * dpr;
@@ -58,8 +47,8 @@ export default class Renderer3D implements Renderer {
 
         function calcCube(kind: LandKind, alt: number, cell: Cell): Cube {
             const color = kindColor(kind, cell);
-            const height = cellSize + alt * 2;
-            const dim = new CubeDimension(cellSize, cellSize, height);
+            const z = cellSize + alt * 2;
+            const dim = new CubeDimension(cellSize, cellSize, z);
             return new Cube(dim, color, /*border:*/ false);
         }
 
@@ -104,5 +93,16 @@ export default class Renderer3D implements Renderer {
         return {
             legends,
         };
+    }
+
+    private determineCellSize(width: number, height: number) {
+        const both = height + width;
+        const fromHeight = ((this.canvas.height - 200) / both) * 2;
+        const fromWidth = ((this.canvas.width / both) * 2) / Math.sqrt(3);
+        let cellSize = Math.floor(fromHeight > fromWidth ? fromWidth : fromHeight);
+        if (cellSize % 2 === 1) {
+            cellSize--;
+        }
+        return cellSize > 6 ? cellSize : 6;
     }
 }

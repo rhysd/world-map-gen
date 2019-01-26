@@ -2,15 +2,15 @@ import { Board } from 'world-map-gen';
 import { Renderer, Rendered, Legend } from './renderer';
 
 export default class Renderer2D implements Renderer {
-    canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D;
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.ctx = this.canvas.getContext('2d')!;
     }
 
-    render(board: Board): Rendered {
+    public render(board: Board): Rendered {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.canvas.getBoundingClientRect();
         this.canvas.width = rect.width * dpr;
