@@ -4,6 +4,7 @@ WASMSRCS := \
 	pkg/world_map_gen.d.ts \
 	pkg/world_map_gen.js \
 	pkg/world_map_gen_bg.wasm \
+	pkg/package.json \
 
 DOCSSRCS := $(wildcard docs/*.js) \
 	$(wildcard docs/*.wasm) \
@@ -21,16 +22,19 @@ release: target/release/world-map-gen
 target/release/world-map-gen: $(SRCS)
 	cargo build --release
 
-wasm: $(WASMSRCS)
-
-$(WASMSRCS): $(SRCS)
+build-wasm-release: $(SRCS)
 	wasm-pack build --release
 
-wasm-release: clean $(WASMSRCS)
+build-wasm-debug: $(SRCS)
+	wasm-pack build --dev -- --features wasm_debug
+
+wasm-release: clean build-wasm-release
 	wasm-opt -Oz pkg/world_map_gen_bg.wasm -o tmp.wasm
 	mv tmp.wasm pkg/world_map_gen_bg.wasm
 	cp README.md pkg/
 	cp LICENSE.txt pkg/
+
+wasm-debug: build-wasm-debug
 
 www/dist: wasm-release
 	cd www && npm run release
@@ -53,4 +57,16 @@ clean-docs:
 clean:
 	rm -rf pkg www/dist
 
-.PHONY: debug release wasm wasm-release clean webpack-dist clean-docs watch all
+.PHONY: \
+	debug \
+	release \
+	wasm \
+	wasm-release \
+	wasm-debug \
+	clean \
+	webpack-dist \
+	clean-docs \
+	watch \
+	all \
+	build-wasm-release \
+	build-wasm-debug

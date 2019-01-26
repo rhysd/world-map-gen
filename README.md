@@ -228,6 +228,15 @@ OPTIONS:
 
 
 
+## Development
+
+[Makefile](./Makefile) provides useful scripts to develop this repository.
+
+For debugging Wasm package from browser, please build this package with [wasm-pack][] and
+`--features wasm_debug`.
+
+
+
 ## License
 
 Distributed under [the MIT License](LICENSE.txt).
