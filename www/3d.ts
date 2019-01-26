@@ -14,7 +14,6 @@ export default class Renderer3D implements Renderer {
         const fromHeight = ((this.canvas.height - 200) / both) * 2;
         const fromWidth = ((this.canvas.width / both) * 2) / Math.sqrt(3);
         let cellSize = Math.floor(fromHeight > fromWidth ? fromWidth : fromHeight);
-        console.log({ fromHeight, fromWidth, cellSize });
         if (cellSize % 2 === 1) {
             cellSize--;
         }

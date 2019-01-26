@@ -50,12 +50,39 @@ extern crate rand;
 extern crate serde_json;
 extern crate termcolor2rgb;
 extern crate wasm_bindgen;
+#[cfg(feature = "wasm_debug")]
+extern crate web_sys;
 
 use self::rand::rngs;
 use crate::board;
 use crate::gen::{RandomBoardGen, Resolution};
 use crate::land::LandKind;
+use cfg_if::cfg_if;
 use wasm_bindgen::prelude::*;
+
+cfg_if! {
+    if #[cfg(feature = "console_error_panic_hook")] {
+        extern crate console_error_panic_hook;
+        use self::console_error_panic_hook::set_once as set_panic_hook;
+    } else {
+        #[inline]
+        fn set_panic_hook() {}
+    }
+}
+
+cfg_if! {
+    if #[cfg(feature = "wasm_debug")] {
+        macro_rules! log {
+            ($($t:tt)*) => {
+                web_sys::console::log_1(&format!($($t)*).into());
+            }
+        }
+    } else {
+        macro_rules! log {
+            ($($t:tt)*) => {}
+        }
+    }
+}
 
 /// Represents one cell in board. In contrast to `land::Land`, it only contains its land kind and
 /// altitude in order to reduce total memory size.
@@ -141,6 +168,7 @@ pub struct Generator {
 #[wasm_bindgen]
 impl Generator {
     pub fn new() -> Generator {
+        set_panic_hook();
         Generator {
             inner: RandomBoardGen::default(),
         }
@@ -148,13 +176,28 @@ impl Generator {
 
     /// Generates random map board with given width and height. Parameters are in number of cells.
     pub fn gen_auto(&mut self, width: usize, height: usize) -> Board {
+        log!("Generate board: width={}, height={}", width, height);
         let inner = self.inner.gen_auto(width, height);
+        #[cfg(feature = "wasm_debug")]
+        {
+            for (y, row) in inner.rows().enumerate() {
+                for (x, cell) in row.iter().enumerate() {
+                    log!("At ({}, {}): {:?}", x, y, cell);
+                }
+            }
+        }
         Board { inner }
     }
 
     /// Generates random map board with given resolution, width and height. Width and height are
     /// in number of cells.
     pub fn gen(&mut self, res: Resolution, width: usize, height: usize) -> Board {
+        log!(
+            "Generate board with resolution={:?}: width={}, height={}",
+            res,
+            width,
+            height,
+        );
         let inner = match res {
             Resolution::Low => self.inner.gen_small(width, height),
             Resolution::Middle => self.inner.gen_middle(width, height),

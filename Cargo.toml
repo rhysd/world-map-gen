@@ -10,6 +10,9 @@ readme = "README.md"
 include = ["/src/**/*.rs", "/Cargo.toml", "/LICENSE.txt"]
 license-file = "LICENSE.txt"
 
+[package.metadata.release]
+no-dev-version = true
+
 [[bin]]
 path = "src/main.rs"
 name = "world-map-gen"
@@ -17,6 +20,10 @@ name = "world-map-gen"
 [lib]
 # Append cdylib for adding WebAssembly target
 crate-type = ["cdylib", "lib"]
+
+[features]
+default = []
+wasm_debug = ["console_error_panic_hook", "web-sys"]
 
 [dependencies]
 termcolor = "1.0.4"
@@ -36,12 +43,11 @@ rand = "0.6.4"
 wasm-bindgen = "0.2.32"
 rand = { version = "0.6.4", default-features = false, features = ["wasm-bindgen"] }
 wee_alloc = { version = "0.4.2", optional = true }
+console_error_panic_hook = { version = "0.1.1", optional = true }
+web-sys = { version = "0.3.10", features = ["console"], optional = true}
 
 [dev-dependencies]
 cargo-husky = "1.2.1"
-
-[package.metadata.release]
-no-dev-version = true
 
 [badges]
 maintenance = { status = "passively-maintained" }
