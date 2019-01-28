@@ -17,8 +17,8 @@
 //! // Generate a new random map generator
 //! const gen = Generator.new();
 //!
-//! // Generate random 200x200 map
-//! const board = gen.gen(200, 200);
+//! // Generate random 200x200 map with automatic resolution
+//! const board = gen.gen_auto(200, 200);
 //!
 //! for (let x = 0; x < board.width(); x++) {
 //!     for (let y = 0; y < board.height(); y++) {
@@ -206,3 +206,52 @@ impl Generator {
         Board { inner }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    extern crate wasm_bindgen_test;
+    use wasm_bindgen_test::*;
+
+    wasm_bindgen_test_configure!(run_in_browser);
+
+    #[wasm_bindgen_test]
+    pub fn test_generate_board() {
+        let mut gen = Generator::new();
+        let board = gen.gen_auto(10, 20);
+        let width = board.width();
+        let height = board.height();
+        assert_eq!(width, 10);
+        assert_eq!(height, 20);
+
+        for x in 0..width {
+            for y in 0..height {
+                let cell = board.at(x, y);
+
+                let color_code = cell.color_code().unwrap();
+                assert!(color_code.len() > 0, "{}", color_code);
+                assert!(
+                    color_code.chars().skip(1).all(|c| c.is_ascii_hexdigit()),
+                    "{}",
+                    color_code
+                );
+
+                let rgb_color = cell.rgb_color();
+                assert!(rgb_color.is_some(), "{:?}", rgb_color);
+
+                let altitude = cell.altitude;
+                assert!(altitude < 100, "{}", altitude);
+
+                let legend = cell.legend();
+                let kind = format!("{:?}", cell.kind);
+                assert!(
+                    legend.contains(&kind),
+                    "Legend '{}' does not contain kind '{}'",
+                    legend,
+                    kind
+                );
+            }
+        }
+    }
+} // mod tests

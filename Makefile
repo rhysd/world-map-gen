@@ -44,6 +44,18 @@ release-docs: clean-docs $(DOCSSRCS)
 $(DOCSSRCS): www/dist
 	cp -R www/dist/* docs/
 
+test:
+	@echo 'Running tests for Rust library...'
+	RUST_BACKTRACE=1 cargo test
+	@echo 'Running tests for Wasm library...'
+	wasm-pack test --chrome --headless
+
+lint:
+	@echo 'Running linter for Rust sources...'
+	cargo clippy
+	@echo 'Running linters for Demo app sources...'
+	cd www/ && npm run lint
+
 watch-wasm:
 	tmux split-window -v guard
 	tmux last-pane
@@ -61,16 +73,18 @@ clean:
 	rm -rf pkg www/dist
 
 .PHONY: \
-	debug \
-	release \
-	wasm \
-	wasm-release \
-	wasm-debug \
+	all \
+	build-wasm-debug \
+	build-wasm-release \
 	clean \
-	webpack-dist \
 	clean-docs \
+	debug \
+	lint \
+	release \
+	test \
+	wasm \
+	wasm-debug \
+	wasm-release \
 	watch \
 	watch-wasm \
-	all \
-	build-wasm-release \
-	build-wasm-debug
+	webpack-dist \
