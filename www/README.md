@@ -29,10 +29,12 @@ copy all assets (wasm binary, HTML, styles, images...). Built application is put
 npm run build
 ```
 
-### Run linter
+### Run linters
 
-[tslint](https://github.com/palantir/tslint) is used for linting. Following command runs the linter
-for TypeScript sources.
+[tslint](https://github.com/palantir/tslint) is used for linting TypeScript sources. And
+[stylelint](https://github.com/stylelint/stylelint) is used for linting CSS.
+
+Following command runs linters in parallel.
 
 ```
 npm run lint

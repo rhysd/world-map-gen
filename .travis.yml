@@ -10,15 +10,29 @@ matrix:
   include:
     - os: osx
       rust: stable
+      env: LINT=false
     - os: linux
       rust: stable
+      env: LINT=false
+    - os: linux
+      rust: stable
+      env: LINT=true
 
 before_script:
   - rustc -V
   - cargo -V
 
 script:
-  - cargo test --verbose
+  - |
+      if [[ "$LINT" == "false" ]]; then
+        cargo test --verbose
+      else
+        rustup component add clippy
+        cargo clippy
+        cd www/
+        npm install
+        npm run lint
+      fi
 
 notifications:
   email:
