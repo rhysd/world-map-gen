@@ -44,10 +44,13 @@ release-docs: clean-docs $(DOCSSRCS)
 $(DOCSSRCS): www/dist
 	cp -R www/dist/* docs/
 
-watch:
+watch-wasm:
 	tmux split-window -v guard
 	tmux last-pane
 	cd www && npm start
+
+watch:
+	cargo watch -x test
 
 all: release release-docs
 
@@ -67,6 +70,7 @@ clean:
 	webpack-dist \
 	clean-docs \
 	watch \
+	watch-wasm \
 	all \
 	build-wasm-release \
 	build-wasm-debug

@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --config=webpack.dev.js",
+    "lint": "tslint -p .",
     "release": "webpack --config=webpack.prod.js",
     "start": "webpack-dev-server --config=webpack.dev.js"
   },
