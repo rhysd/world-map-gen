@@ -18,17 +18,23 @@ matrix:
       rust: stable
       env: LINT=true
 
+install:
+  - cargo install wasm-pack
+
 before_script:
   - rustc -V
   - cargo -V
+  - wasm-pack --version
 
 script:
   - |
       if [[ "$LINT" == "false" ]]; then
         cargo test --verbose
+        wasm-pack build --release
       else
         rustup component add clippy
         cargo clippy
+        wasm-pack build
         cd www/
         npm install
         npm run lint
