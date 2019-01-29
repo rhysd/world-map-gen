@@ -252,7 +252,7 @@ Distributed under [the MIT License](LICENSE.txt).
 [wasm-pack]: https://github.com/rustwasm/wasm-pack
 [wasm-bindgen]: https://github.com/rustwasm/wasm-bindgen
 [cargo]: https://github.com/rust-lang/cargo
-[appveyor-badge]: https://ci.appveyor.com/api/project/rhysd/world-map-gen/branch/master?svg=true
+[appveyor-badge]: https://ci.appveyor.com/api/projects/status/aitu2ritu4rcsykb?svg=true
 [appveyor]: https://ci.appveyor.com/project/rhysd/world-map-gen/branch/master
 [travis-ci-badge]: https://travis-ci.org/rhysd/world-map-gen.svg?branch=master
 [travis-ci]: https://travis-ci.org/rhysd/world-map-gen

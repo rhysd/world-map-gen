@@ -7,12 +7,12 @@ init:
   - mkdir c:\rustup
   - SET PATH=c:\cargo\bin;%PATH%
 
-clone_folder: c:\path-slash
+clone_folder: c:\world-map-gen
 
 environment:
   CARGO_HOME: "c:\\cargo"
   RUSTUP_HOME: "c:\\rustup"
-  CARGO_TARGET_DIR: "c:\\path-slash\\target"
+  CARGO_TARGET_DIR: "c:\\world-map-gen\\target"
   global:
     RUST_BACKTRACE: full
 
