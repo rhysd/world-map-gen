@@ -117,7 +117,7 @@ impl<R: Rng> RandomBoardGen<R> {
     /// an error.
     pub fn gen(
         &mut self,
-        resolution: &Option<Resolution>,
+        resolution: Option<Resolution>,
         width: Option<usize>,
         height: Option<usize>,
     ) -> Result<Board<'static>> {

@@ -88,15 +88,15 @@ impl<'a, R: Rng> SlopeGen<'a, R> {
     // Generate down rates with 30% noise per direction
     fn random_down_rates(&mut self) -> [u8; 4] {
         let mut rates = [0, 0, 0, 0];
-        let min = (self.down_rate as i32) * 7 / 10;
-        let deg = (self.down_rate as i32) - min;
+        let min = i32::from(self.down_rate) * 7 / 10;
+        let deg = i32::from(self.down_rate) - min;
         if deg > 0 {
             let mut budget = deg * 4;
-            for i in 0..3 {
+            for rate in rates.iter_mut().take(3) {
                 let deg_max = cmp::min(budget, deg * 2 + 1);
                 if deg_max > 0 {
                     let noise = self.rng.gen_range(0, deg_max);
-                    rates[i] = (min as u8) + (noise as u8);
+                    *rate = (min as u8) + (noise as u8);
                     budget -= noise;
                 }
             }
