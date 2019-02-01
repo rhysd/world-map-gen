@@ -68,7 +68,10 @@ const app = new class {
             const rendered = this.renderer.render(board);
 
             this.legends.innerHTML = '';
-            for (const legend of rendered.legends.values()) {
+            const names = Array.from(rendered.legends.keys());
+            names.sort();
+            for (const name of names) {
+                const legend = rendered.legends.get(name)!;
                 const item = document.createElement('div');
                 item.className = 'legend';
 
@@ -77,10 +80,10 @@ const app = new class {
                 color.style.backgroundColor = legend.color || 'none';
                 item.appendChild(color);
 
-                const name = document.createElement('div');
-                name.className = 'legend-name';
-                name.textContent = legend.text;
-                item.appendChild(name);
+                const label = document.createElement('div');
+                label.className = 'legend-name';
+                label.textContent = legend.text;
+                item.appendChild(label);
 
                 this.legends.appendChild(item);
             }
