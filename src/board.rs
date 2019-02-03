@@ -25,13 +25,18 @@ use std::collections::HashMap;
 use std::ops::{Index, IndexMut};
 use std::slice;
 
+/// Specific (x, y) position on board.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Pos {
+    /// X coordinate in number of cells on board
     pub x: usize,
+    /// Y coordinate in number of cells on board
     pub y: usize,
 }
 
 impl Pos {
+    /// Calculate how much cost it takes to reach other position from self position. Only 4
+    /// directions (up, down, left, right) are allowed to move.
     #[inline]
     pub fn move_cost(&self, other: &Pos) -> usize {
         use std::cmp::{max, min};

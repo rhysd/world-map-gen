@@ -78,6 +78,7 @@ macro_rules! define_lands {
         /// Represents the kind of cell. `preset()` method returns a preset cell constants for
         /// the kind.
         #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+        #[allow(missing_docs)]
         #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize)]
         pub enum LandKind {
             $($kind,)+

@@ -8,8 +8,13 @@ use std::io;
 /// Error type which represents all kinds of errors for world_map_gen crate.
 #[derive(Debug)]
 pub enum Error {
+    /// IO errors occuring when reading from stdin/file or writing to stdout/stderr/file by wrapping
+    /// `std::io::Error`.
     IoError(io::Error),
+    /// An error raised when a board size cannot be determined automatically. Size must be set manually
+    /// in the case.
     CannotDetermineTermsize,
+    /// A fatal error when a generated board cannot be serialized into JSON.
     NotJsonSerializable(serde_json::Error),
 }
 
@@ -35,4 +40,6 @@ impl From<serde_json::Error> for Error {
     }
 }
 
+/// Reprensents a value or an error in `world_map_gen` package. Similar to `std::io::Error` for
+/// `std::io` package.
 pub type Result<T> = std::result::Result<T, Error>;
