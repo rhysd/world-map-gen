@@ -89,7 +89,9 @@ cfg_if! {
 #[wasm_bindgen]
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub struct Cell {
+    /// Kind for the cell (Sea, Forest, Mountain, ...)
     pub kind: LandKind,
+    /// Altitude of the cell in 0..99
     pub altitude: u8,
 }
 
@@ -167,6 +169,8 @@ pub struct Generator {
 
 #[wasm_bindgen]
 impl Generator {
+    /// Create a new generator instance initialized with thread-default random number generator.
+    /// No seedable RNG is provided for Wasm interface for now.
     pub fn new() -> Generator {
         set_panic_hook();
         Generator {
