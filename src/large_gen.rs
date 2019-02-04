@@ -26,6 +26,10 @@ pub struct LargeBoardGen<'a, R: Rng + 'a> {
     down_rate: u8,
 }
 
+// This warning is raised only on wasm32 target since Pos contains usize fields.
+// usize field have 64bits length on x86_64 but have 32bits on wasm32.
+// So using `self` argument is efficient on wasm32, but not on x86_64.
+#[allow(clippy::trivially_copy_pass_by_ref)]
 impl<'a, R: Rng> LargeBoardGen<'a, R> {
     pub fn new<'b: 'a>(rng: &'b mut R, width: usize, height: usize) -> Self {
         let max_towns = rng.gen_range(10, 16);
@@ -290,6 +294,11 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
 
                 let mut dirs = HashSet::new();
                 near_towns.into_iter().filter_map(move |(_, near)| {
+                    // On wasm32, usize has 32bits length so converting from usize to f64 is lossless.
+                    // For conversion between usize and f64 using `as`, clippy complains that using
+                    // f64::from instead is safer. This is true on wasm32, but on x86_64, conversion
+                    // between usize and f64 is not lossless so f64::from(usize) is not implemented.
+                    #[allow(clippy::cast_lossless)]
                     let angle =
                         (town.y as f64 - near.y as f64).atan2(town.x as f64 - near.x as f64);
                     let dir = (angle / 45.0) as usize;

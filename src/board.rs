@@ -34,6 +34,10 @@ pub struct Pos {
     pub y: usize,
 }
 
+// This warning is raised only on wasm32 target since Pos contains usize fields.
+// usize field have 64bits length on x86_64 but have 32bits on wasm32.
+// So using `self` argument is efficient on wasm32, but not on x86_64.
+#[allow(clippy::trivially_copy_pass_by_ref)]
 impl Pos {
     /// Calculate how much cost it takes to reach other position from self position. Only 4
     /// directions (up, down, left, right) are allowed to move.
