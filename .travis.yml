@@ -33,8 +33,11 @@ script:
         wasm-pack build --release
       else
         rustup component add clippy
+        cargo clippy -- --version
         cargo clippy
-        wasm-pack build
+        cargo clippy --target wasm32-unknown-unknown
+        npm install world-map-gen
+        mv node_modules/world-map-gen pkg
         cd www/
         npm install
         npm run lint
