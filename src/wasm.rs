@@ -97,7 +97,7 @@ pub struct Cell {
 
 impl Cell {
     #[inline]
-    fn land_color(self) -> Option<(u8, u8, u8)> {
+    fn land_color(&self) -> Option<(u8, u8, u8)> {
         use termcolor2rgb::ColorExt;
         self.kind.preset_ref().color.fg().map(|c| c.to_rgb())
     }
@@ -107,20 +107,20 @@ impl Cell {
 impl Cell {
     /// Returns color code of land as `#rrggbb` format string from land kind.
     /// When no color is set, returns `None`. It means `undefined` in JavaScript side.
-    pub fn color_code(self) -> Option<String> {
+    pub fn color_code(&self) -> Option<String> {
         self.land_color()
             .map(|(r, g, b)| format!("#{:02x}{:02x}{:02x}", r, g, b))
     }
 
     /// Returns RGB color as u32. 0~8 bits for B, 9~16 bits for G, 17~24 bits for R.
     /// When no color is set, returns `None`. It means `undefined` in JavaScript side.
-    pub fn rgb_color(self) -> Option<u32> {
+    pub fn rgb_color(&self) -> Option<u32> {
         self.land_color()
             .map(|(r, g, b)| (u32::from(r) << 16) + (u32::from(g) << 8) + u32::from(b))
     }
 
     /// Returns legend of land as string from land kind.
-    pub fn legend(self) -> String {
+    pub fn legend(&self) -> String {
         self.kind.legend().to_string()
     }
 }
