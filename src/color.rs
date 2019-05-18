@@ -1,7 +1,7 @@
-extern crate serde;
-extern crate serde_json;
-extern crate termcolor;
-extern crate termcolor2rgb;
+use serde;
+use serde_json;
+use termcolor;
+use termcolor2rgb;
 use termcolor::ColorSpec;
 
 pub struct SerializableColorSpec<'a>(pub &'a ColorSpec);

@@ -2,8 +2,8 @@
 //!
 //! Terminal must support 256colors. And large map may require much time and CPU usage to render map.
 
-extern crate serde_json;
-extern crate termcolor;
+use serde_json;
+use termcolor;
 
 use self::termcolor::{BufferedStandardStream, ColorChoice, ColorSpec, WriteColor};
 use crate::board::Board;
@@ -25,7 +25,7 @@ use std::io::Write;
 ///
 /// draw_term(&board, true).unwrap();
 /// ```
-pub fn draw_term(board: &Board, show_altitude: bool) -> Result<()> {
+pub fn draw_term(board: &Board<'_>, show_altitude: bool) -> Result<()> {
     let stdout = &mut BufferedStandardStream::stdout(ColorChoice::Always);
     let mut prev = ColorSpec::default();
     let mut legends = HashMap::new();
@@ -85,7 +85,7 @@ pub fn draw_term(board: &Board, show_altitude: bool) -> Result<()> {
 ///
 /// println!("JSON: {}", std::str::from_utf8(&buffer).unwrap());
 /// ```
-pub fn draw_json<W: Write>(writer: &mut W, board: &Board) -> Result<()> {
+pub fn draw_json<W: Write>(writer: &mut W, board: &Board<'_>) -> Result<()> {
     serde_json::to_writer(writer, &board)?;
     Ok(())
 }

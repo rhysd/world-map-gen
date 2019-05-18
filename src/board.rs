@@ -17,8 +17,8 @@
 //!  y
 //! ```
 
-extern crate serde;
-extern crate serde_json;
+use serde;
+
 
 use crate::land::Land;
 use std::collections::HashMap;
@@ -99,13 +99,13 @@ impl<'a> Board<'a> {
 
     /// Returns a reference to cell at given (x, y) position
     #[inline]
-    pub fn at(&self, x: usize, y: usize) -> &Land {
+    pub fn at(&self, x: usize, y: usize) -> &Land<'_> {
         &self.cells[self.index_at(x, y)]
     }
 
     /// Returns a mutable reference to cell at given (x, y) position
     #[inline]
-    pub fn at_mut(&mut self, x: usize, y: usize) -> &'a mut Land {
+    pub fn at_mut(&mut self, x: usize, y: usize) -> &'a mut Land<'_> {
         let idx = self.index_at(x, y);
         &mut self.cells[idx]
     }

@@ -1,11 +1,11 @@
-extern crate rand;
+use rand;
 
 use self::rand::Rng;
 use crate::board::Pos;
 use std::cmp;
 use std::collections::HashSet;
 
-pub struct SlopeGen<'a, R: Rng + 'a> {
+pub struct SlopeGen<'a, R: Rng> {
     pub altitudes: Vec<Vec<u8>>,
     pub tops: HashSet<Pos>,
     rng: &'a mut R,

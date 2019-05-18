@@ -1,4 +1,4 @@
-extern crate rand;
+use rand;
 
 use self::rand::seq::SliceRandom;
 use self::rand::Rng;
@@ -15,7 +15,7 @@ struct Connection<'a> {
     to: &'a Pos,
 }
 
-pub struct LargeBoardGen<'a, R: Rng + 'a> {
+pub struct LargeBoardGen<'a, R: Rng> {
     rng: &'a mut R,
     width: usize,
     height: usize,
@@ -54,12 +54,12 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
     #[inline]
     fn land_kind(altitude: u8) -> LandKind {
         match altitude {
-            0...40 => LandKind::DeepSea,
-            41...55 => LandKind::Sea,
-            56...70 => LandKind::Plain,
-            71...80 => LandKind::Forest,
-            81...90 => LandKind::Mountain,
-            91...99 => LandKind::Highland,
+            0..=40 => LandKind::DeepSea,
+            41..=55 => LandKind::Sea,
+            56..=70 => LandKind::Plain,
+            71..=80 => LandKind::Forest,
+            81..=90 => LandKind::Mountain,
+            91..=99 => LandKind::Highland,
             _ => unreachable!(),
         }
     }
@@ -319,7 +319,7 @@ impl<'a, R: Rng> LargeBoardGen<'a, R> {
             .filter({
                 // Dedup connections (from-to pairs)
                 let mut saw = HashMap::new();
-                move |conn: &Connection| {
+                move |conn: &Connection<'_>| {
                     if let Some(to) = saw.get(conn.from) {
                         if to == &conn.to {
                             return false;

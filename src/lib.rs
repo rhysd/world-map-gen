@@ -55,7 +55,7 @@
 extern crate lazy_static;
 #[macro_use]
 extern crate serde_derive;
-extern crate cfg_if;
+
 
 pub mod board;
 pub mod draw;

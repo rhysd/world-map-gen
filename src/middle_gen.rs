@@ -1,4 +1,4 @@
-extern crate rand;
+use rand;
 
 use self::rand::seq::SliceRandom;
 use self::rand::Rng;
@@ -7,7 +7,7 @@ use crate::land::LandKind;
 use crate::slope::SlopeGen;
 use std::collections::HashSet;
 
-pub struct MiddleBoardGen<'a, R: Rng + 'a> {
+pub struct MiddleBoardGen<'a, R: Rng> {
     rng: &'a mut R,
     width: usize,
     height: usize,
@@ -40,10 +40,10 @@ impl<'a, R: Rng> MiddleBoardGen<'a, R> {
     #[inline]
     fn land_kind(altitude: u8) -> LandKind {
         match altitude {
-            0...10 => LandKind::Sea,
-            11...40 => LandKind::Plain,
-            41...70 => LandKind::Forest,
-            71...99 => LandKind::Mountain,
+            0..=10 => LandKind::Sea,
+            11..=40 => LandKind::Plain,
+            41..=70 => LandKind::Forest,
+            71..=99 => LandKind::Mountain,
             _ => unreachable!(),
         }
     }

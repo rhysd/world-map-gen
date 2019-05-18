@@ -1,5 +1,5 @@
-extern crate clap;
-extern crate rand;
+
+
 
 use clap::{App, Arg};
 use std::{fmt, io};
@@ -11,7 +11,7 @@ enum Error {
 }
 
 impl fmt::Debug for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Error::GenFail(e) => write!(f, "{}", e),
             Error::CliParseFail { name, msg } => {

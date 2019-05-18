@@ -38,8 +38,8 @@
 //! assert_eq!(board.height(), 4);
 //! ```
 
-extern crate rand;
-extern crate term_size;
+use rand;
+use term_size;
 #[cfg(target_arch = "wasm32")]
 extern crate wasm_bindgen;
 
@@ -150,10 +150,10 @@ impl<R: Rng> RandomBoardGen<R> {
         Board::build(width, height, |_, _| {
             let alt = self.rng.gen_range(0, 100);
             match alt {
-                0...15 => LandKind::Sea.preset(alt),
-                16...55 => LandKind::Plain.preset(alt),
-                56...85 => LandKind::Forest.preset(alt),
-                86...99 => LandKind::Mountain.preset(alt),
+                0..=15 => LandKind::Sea.preset(alt),
+                16..=55 => LandKind::Plain.preset(alt),
+                56..=85 => LandKind::Forest.preset(alt),
+                86..=99 => LandKind::Mountain.preset(alt),
                 _ => unreachable!(),
             }
         })

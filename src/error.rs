@@ -1,6 +1,6 @@
 //! Provides error type to represent all kinds of errors which may occur while world map generations.
 
-extern crate serde_json;
+use serde_json;
 
 use std::fmt;
 use std::io;
@@ -19,7 +19,7 @@ pub enum Error {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Error::IoError(e) => write!(f, "{}", e),
             Error::CannotDetermineTermsize => write!(f, "Cannot determine terminal size"),

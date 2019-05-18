@@ -26,9 +26,9 @@
 //! let cell = LandKind::Mountain.preset(80);
 //! ```
 
-extern crate serde;
-extern crate serde_json;
-extern crate termcolor;
+use serde;
+
+use termcolor;
 #[cfg(target_arch = "wasm32")]
 extern crate wasm_bindgen;
 
