@@ -1,6 +1,6 @@
 [package]
 name = "world-map-gen"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["rhysd <https://rhysd.github.io>"]
 edition = "2018"
 description = "Command line tool and library to generate random game world maps for both Rust and WebAssembly"
