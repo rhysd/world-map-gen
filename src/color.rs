@@ -1,8 +1,8 @@
 use serde;
 use serde_json;
 use termcolor;
-use termcolor2rgb;
 use termcolor::ColorSpec;
+use termcolor2rgb;
 
 pub struct SerializableColorSpec<'a>(pub &'a ColorSpec);
 

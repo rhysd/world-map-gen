@@ -1,6 +1,3 @@
-
-
-
 use clap::{App, Arg};
 use std::{fmt, io};
 use world_map_gen::{draw, gen};

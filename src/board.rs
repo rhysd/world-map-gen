@@ -19,7 +19,6 @@
 
 use serde;
 
-
 use crate::land::Land;
 use std::collections::HashMap;
 use std::ops::{Index, IndexMut};
